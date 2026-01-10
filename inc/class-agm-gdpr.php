@@ -11,16 +11,10 @@ class AgmGdpr {
 	}
 
 	private function _add_hooks() {
-		add_action( 'admin_init', array( $this, 'add_privacy_copy' ) );
-
-		add_filter(
-			'wp_privacy_personal_data_exporters',
-			array( $this, 'register_data_exporter' )
-		);
-		add_filter(
-			'wp_privacy_personal_data_erasers',
-			array( $this, 'register_data_eraser' )
-		);
+		// Registriere Privacy Policy Text sehr früh
+		add_action( 'rest_api_init', array( $this, 'add_privacy_copy' ) );
+		add_action( 'wp_privacy_personal_data_exporters', array( $this, 'register_data_exporter' ) );
+		add_action( 'wp_privacy_personal_data_erasers', array( $this, 'register_data_eraser' ) );
 	}
 
 	/**
@@ -28,12 +22,36 @@ class AgmGdpr {
 	 */
 	public function add_privacy_copy() {
 		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			error_log( 'PS Maps GDPR: wp_add_privacy_policy_content existiert nicht' );
 			return false;
 		}
-		wp_add_privacy_policy_content(
-			__( 'PS-Maps', 'psmaps' ),
+		
+		$result = wp_add_privacy_policy_content(
+			__( 'PS-Maps', AGM_LANG ),
 			$this->get_policy_content()
 		);
+		
+		if ( ! $result ) {
+			error_log( 'PS Maps GDPR: wp_add_privacy_policy_content() fehlgeschlagen, versuche manuelle Option' );
+			// Fallback: Direktes Speichern in die Option
+			$this->add_privacy_copy_manually();
+		}
+	}
+
+	/**
+	 * Manuelles Hinzufügen zur Privacy Policy Option
+	 */
+	private function add_privacy_copy_manually() {
+		$privacy_policy = get_option( 'wp_page_for_privacy_policy' );
+		
+		if ( ! $privacy_policy ) {
+			error_log( 'PS Maps GDPR: Keine Privacy Policy Seite gesetzt' );
+			return;
+		}
+		
+		$meta_key = 'wp_page_for_privacy_policy_' . md5( 'PS-Maps' );
+		update_option( $meta_key, $this->get_policy_content() );
+		error_log( 'PS Maps GDPR: Manuelle Option gespeichert: ' . $meta_key );
 	}
 
 	/**
@@ -45,11 +63,11 @@ class AgmGdpr {
 	 */
 	public function register_data_exporter( $exporters ) {
 		$exporters['agm_google_maps-autocreated'] = array(
-			'exporter_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', 'psmaps' ),
+			'exporter_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', AGM_LANG ),
 			'callback' => array( $this, 'export_autocreated_maps' ),
 		);
 		$exporters['agm_google_maps-associated'] = array(
-			'exporter_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', 'psmaps' ),
+			'exporter_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', AGM_LANG ),
 			'callback' => array( $this, 'export_associated_maps' ),
 		);
 		return $exporters;
@@ -64,11 +82,11 @@ class AgmGdpr {
 	 */
 	public function register_data_eraser( $erasers ) {
 		$erasers['agm_google_maps-autocreated'] = array(
-			'eraser_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', 'psmaps' ),
+			'eraser_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', AGM_LANG ),
 			'callback' => array( $this, 'erase_autocreated_maps' ),
 		);
 		$erasers['agm_google_maps-associated'] = array(
-			'eraser_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', 'psmaps' ),
+			'eraser_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', AGM_LANG ),
 			'callback' => array( $this, 'erase_associated_maps' ),
 		);
 		return $erasers;
@@ -89,7 +107,7 @@ class AgmGdpr {
 		return $this->get_exported_maps_data(
 			$maps,
 			'associated',
-			__( 'Zugehörige Karten', 'psmaps' )
+			__( 'Zugehörige Karten', AGM_LANG )
 		);
 	}
 
@@ -123,7 +141,7 @@ class AgmGdpr {
 		return $this->get_exported_maps_data(
 			$maps,
 			'autocreated',
-			__( 'Automatisch erstellte Karten', 'psmaps' )
+			__( 'Automatisch erstellte Karten', AGM_LANG )
 		);
 	}
 
@@ -279,15 +297,15 @@ class AgmGdpr {
 
 	public function get_policy_content() {
 		return '' .
-			'<h3>' . __( 'Dritte', 'psmaps' ) . '</h3>' .
-			'<p>' . __( 'Diese Webseite verfolgt Deine (anonymen) Standortdaten mithilfe Deiner Browser-API und gibt sie an den Google Maps-API-Dienst weiter.', 'psmaps' ) . '</p>' .
-			'<p>' . __( 'Diese Webseite enthält auch Ressourcen von Drittanbietern aus der Google Maps-API, die möglicherweise selbst Cookies setzen.', 'psmaps' ) . '</p>' .
-			'<h3>' . __( 'Check-ins', 'psmaps' ) . '</h3>' .
-			'<p>' . __( 'Diese Webseite verfolgt möglicherweise Deinen Standort (mit Deiner Zustimmung) in Form eines anonymen oder benutzerbezogenen Check-ins. Diese Informationen können exportiert und entfernt werden.', 'psmaps' ) . '</p>' .
-			'<h3>' . __( 'Für Seiten-Mitglieder', 'psmaps' ) . '</h3>' .
-			'<p>' . __( 'Diese Webseite verwendet möglicherweise Deine angegebenen Adressinformationen (falls vorhanden), um sie auf einer Karte anzuzeigen und sie somit für die Google Maps-API freizugeben. Diese Informationen können entfernt werden.', 'psmaps' ) . '</p>' .
-			'<h3>' . __( 'Für Inhaltsersteller', 'psmaps' ) . '</h3>' .
-			'<p>' . __( 'Diese Seite erstellt möglicherweise automatisch Karten anhand der bereitgestellten Standortdaten und/oder verknüpft sie mit den von Dir erstellten Inhalten, z.B. Beiträge und BuddyPress-Aktivitätsaktualisierungen. Dieser Inhalt kann exportiert und entfernt werden.', 'psmaps' ) . '</p>' .
+			'<h3>' . __( 'Dritte', AGM_LANG ) . '</h3>' .
+			'<p>' . __( 'Diese Webseite verfolgt Deine (anonymen) Standortdaten mithilfe Deiner Browser-API und gibt sie an den Google Maps-API-Dienst weiter.', AGM_LANG ) . '</p>' .
+			'<p>' . __( 'Diese Webseite enthält auch Ressourcen von Drittanbietern aus der Google Maps-API, die möglicherweise selbst Cookies setzen.', AGM_LANG ) . '</p>' .
+			'<h3>' . __( 'Check-ins', AGM_LANG ) . '</h3>' .
+			'<p>' . __( 'Diese Webseite verfolgt möglicherweise Deinen Standort (mit Deiner Zustimmung) in Form eines anonymen oder benutzerbezogenen Check-ins. Diese Informationen können exportiert und entfernt werden.', AGM_LANG ) . '</p>' .
+			'<h3>' . __( 'Für Seiten-Mitglieder', AGM_LANG ) . '</h3>' .
+			'<p>' . __( 'Diese Webseite verwendet möglicherweise Deine angegebenen Adressinformationen (falls vorhanden), um sie auf einer Karte anzuzeigen und sie somit für die Google Maps-API freizugeben. Diese Informationen können entfernt werden.', AGM_LANG ) . '</p>' .
+			'<h3>' . __( 'Für Inhaltsersteller', AGM_LANG ) . '</h3>' .
+			'<p>' . __( 'Diese Seite erstellt möglicherweise automatisch Karten anhand der bereitgestellten Standortdaten und/oder verknüpft sie mit den von Dir erstellten Inhalten, z.B. Beiträge und BuddyPress-Aktivitätsaktualisierungen. Dieser Inhalt kann exportiert und entfernt werden.', AGM_LANG ) . '</p>' .
 		'';
 	}
 

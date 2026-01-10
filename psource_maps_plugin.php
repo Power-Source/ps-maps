@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PS Maps
  * Plugin URI:  https://cp-psource.github.io/ps-maps/
- * Description: Easily embed, customize, and use Google maps on your WordPress site - in posts, pages or as an easy to use widget, display local images and let your site visitors get directions in seconds.
+ * Description: Google Maps lässt sich ganz einfach in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.
  * Version:     1.0.0
  * Text Domain: agm_google_maps
  * Domain Path: languages
@@ -60,6 +60,12 @@ require_once AGM_INC_DIR . 'class-agm-addon-base.php';
 
 // Check if DB needs to be updated.
 AgmPluginInstaller::check();
+
+// Initialize GDPR functionality (admin only).
+if ( is_admin() ) {
+	require_once AGM_INC_DIR . 'class-agm-gdpr.php';
+	AgmGdpr::serve();
+}
 
 add_action(
 	'widgets_init',
