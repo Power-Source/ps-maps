@@ -1,8 +1,8 @@
-=== PS Google Maps ===
-Contributors: DerN3rd (PSOURCE)
+=== PS Maps ===
+Contributors: PSOURCE
 Tags: maps, classicpress,
 Requires at least: 4.9
-Tested up to: 6.8.1
+Tested up to: WordPress 6.8.1, ClassicPress 2.6.0
 Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -42,52 +42,9 @@ Dieses Mapping-Plugin ist vollständig interaktiv!
 Zeige mit unseren erweiterten Steuerelementen, einschließlich Shortcodes mit IDs, ganz einfach mehrere Karten in einem einzigen Beitrag oder einer einzelnen Seite an und steuere die Breite und Höhe! 
 Füge jeder Karte mehrere Markierungen hinzu!
 
-[Projektseite](https://cp-psource.github.io/ps-maps/)
-[GitHub](https://github.com/piestingtal-source/ps-maps)
-
-[POWERED BY PSOURCE](https://github.com/cp-psource)
-
 
 == ChangeLog ==
 
 = 1.0.0 =
-
-* Fix: jQuery
-* Fix: Deprecated google.maps.Marker
-* PhP8 Modernisierungen
-
-= 3.1.1 =
-
-* Links aktualisiert
-* Updater 1.3
-
-= 3.1.0 =
-
-* Fix: PHP Fatal error: Uncaught TypeError: array_merge()
-
-= 3.0.9 =
-
-* Deprecated jQuery Fixes
-
-= 3.0.8 =
-
-* PHP8 Fixes
-* jQuery Fixes
-* Textoptimierung
-* Mehr ReadMe
-
-= 3.0.7 =
-
-* Fix Deprecated: htmlspecialchars()
-* PHP 8 Fixes
-* Textdomain angepasst
-* PsourceUpdater 1.2
-
-= 3.0.6 =
-
-* Textkorrekturen
-* Hilfe-Ressource hinzugefügt
-
-= 3.0.5 =
 
 * Release
