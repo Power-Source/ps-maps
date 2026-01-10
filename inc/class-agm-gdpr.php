@@ -11,47 +11,84 @@ class AgmGdpr {
 	}
 
 	private function _add_hooks() {
-		// Registriere Privacy Policy Text sehr früh
-		add_action( 'rest_api_init', array( $this, 'add_privacy_copy' ) );
+		// Registriere Privacy Policy Text mit eigenem Tab
+		add_action( 'admin_init', array( $this, 'add_privacy_copy' ) );
+		// Und aktualisiere die Privacy Policy Seite
+		add_action( 'admin_init', array( $this, 'update_privacy_page' ), 20 );
 		add_action( 'wp_privacy_personal_data_exporters', array( $this, 'register_data_exporter' ) );
 		add_action( 'wp_privacy_personal_data_erasers', array( $this, 'register_data_eraser' ) );
 	}
 
 	/**
-	 * Adds privacy body copy text
+	 * Adds privacy body copy text to the Privacy Policy Guide (admin area)
 	 */
 	public function add_privacy_copy() {
-		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
-			error_log( 'PS Maps GDPR: wp_add_privacy_policy_content existiert nicht' );
-			return false;
+		// Verhindere mehrfaches Hinzufügen in der gleichen Session
+		static $done = false;
+		if ( $done ) {
+			return;
 		}
+		$done = true;
 		
-		$result = wp_add_privacy_policy_content(
-			__( 'PS-Maps', AGM_LANG ),
-			$this->get_policy_content()
-		);
-		
-		if ( ! $result ) {
-			error_log( 'PS Maps GDPR: wp_add_privacy_policy_content() fehlgeschlagen, versuche manuelle Option' );
-			// Fallback: Direktes Speichern in die Option
-			$this->add_privacy_copy_manually();
-		}
-	}
-
-	/**
-	 * Manuelles Hinzufügen zur Privacy Policy Option
-	 */
-	private function add_privacy_copy_manually() {
-		$privacy_policy = get_option( 'wp_page_for_privacy_policy' );
-		
-		if ( ! $privacy_policy ) {
-			error_log( 'PS Maps GDPR: Keine Privacy Policy Seite gesetzt' );
+		// Verwende die Klasse direkt für mehr Kontrolle
+		if ( ! class_exists( 'WP_Privacy_Policy_Content' ) ) {
 			return;
 		}
 		
-		$meta_key = 'wp_page_for_privacy_policy_' . md5( 'PS-Maps' );
-		update_option( $meta_key, $this->get_policy_content() );
-		error_log( 'PS Maps GDPR: Manuelle Option gespeichert: ' . $meta_key );
+		// Verwende einen eindeutigen, prägnanten Namen
+		// Der Name wird als Überschrift in der Privacy Policy Guide angezeigt
+		$plugin_name = 'Google Maps (PS Maps)';
+		
+		// Rufe direkt die statische Methode auf
+		WP_Privacy_Policy_Content::add(
+			$plugin_name,
+			$this->get_policy_content()
+		);
+	}
+
+	/**
+	 * Aktualisiert die Privacy Policy Seite mit dem Inhalt
+	 */
+	public function update_privacy_page() {
+		// Verhindere mehrfaches Ausführen
+		$option_key = 'agm_gdpr_page_update_done_v1';
+		if ( get_transient( $option_key ) ) {
+			return;
+		}
+		set_transient( $option_key, 1, 12 * HOUR_IN_SECONDS );
+		
+		$privacy_page_id = (int) get_option( 'wp_page_for_privacy_policy' );
+		
+		if ( ! $privacy_page_id ) {
+			error_log( 'PS Maps GDPR: Keine Privacy Policy Seite konfiguriert' );
+			return;
+		}
+		
+		$page = get_post( $privacy_page_id );
+		if ( ! $page || 'publish' !== $page->post_status ) {
+			error_log( 'PS Maps GDPR: Privacy Policy Seite nicht veröffentlicht' );
+			return;
+		}
+		
+		// Prüfe, ob der Inhalt bereits vorhanden ist
+		if ( strpos( $page->post_content, 'agm-privacy-copy' ) !== false ) {
+			error_log( 'PS Maps GDPR: Inhalt bereits in Privacy Policy vorhanden' );
+			return;
+		}
+		
+		$privacy_content = '<div id="agm-privacy-copy" class="wp-policy-content">' . $this->get_policy_content() . '</div>';
+		
+		// Aktualisiere die Seite mit dem neuen Inhalt
+		$update_result = wp_update_post( array(
+			'ID' => $privacy_page_id,
+			'post_content' => $page->post_content . "\n\n" . $privacy_content,
+		), true );
+		
+		if ( is_wp_error( $update_result ) ) {
+			error_log( 'PS Maps GDPR: Fehler beim Aktualisieren: ' . $update_result->get_error_message() );
+		} else {
+			error_log( 'PS Maps GDPR: Privacy Policy Seite erfolgreich aktualisiert (ID: ' . $privacy_page_id . ')' );
+		}
 	}
 
 	/**
