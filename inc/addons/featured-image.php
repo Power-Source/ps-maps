@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Featured image as map marker
-Description: Adds a shortcode attribute that will force your overlay map to use associated post featured image as map marker icon.
+Plugin Name: Bild als Kartenmarkierung
+Description: Fügt ein Shortcode-Attribut hinzu, das Deine Overlay-Karte zwingt, das zugehörige Beitragsbild als Kartenmarkierungssymbol zu verwenden.
 Example:     [map query="post_type=posts" overlay="yes" featured_image="yes"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Fimm_UserPages {

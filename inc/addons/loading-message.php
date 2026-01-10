@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Map loading message
-Description: Gives your maps a customizable loading message via shortcode attribute "loading_message".
-Example:     [map id="1" loading_message="Please wait while map is loading"]
+Plugin Name: Karten Lade-Nachricht
+Description: Gibt Deinen Karten eine anpassbare Lade-Nachricht über das Shortcode-Attribut "loading_message".
+Example:     [map id="1" loading_message="Bitte warten, während die Karte geladen wird"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Mlm_Pages {
@@ -124,13 +124,13 @@ class Agm_Mlm_Pages {
 	public function register_settings() {
 		add_settings_section(
 			'agm_google_maps_mlm',
-			__( 'Map loading message', AGM_LANG ),
+			__( 'Karten Lade-Nachricht', AGM_LANG ),
 			array( $this, 'create_section_notice' ),
 			'agm_google_maps_options_page'
 		);
 		add_settings_field(
 			'agm_google_maps_mlm_auto_assign',
-			__( 'Add loading message to these maps', AGM_LANG ),
+			__( 'Füge Lade-Nachricht zu diesen Karten hinzu', AGM_LANG ),
 			array( $this, 'create_auto_assign_box' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_mlm'
@@ -140,10 +140,9 @@ class Agm_Mlm_Pages {
 	public function create_section_notice() {
 		?><em>
 			<?php __(
-				'You add the loading message in your shortcodes with ' .
-				'<code>loading_message="My message"</code> shortcode ' .
-				'attribute. You can also specify loading messages for ' .
-				'your other maps here.', AGM_LANG
+				'Du fügst die Lade-Nachricht in Deinen Shortcodes mit ' .
+				'<code>loading_message="Meine Nachricht"</code> Shortcode-Attribut hinzu. Du kannst auch Lade-Nachrichten für ' .
+				'Deine anderen Karten hier angeben.', AGM_LANG
 			); ?>
 		</em>
 		<?php
@@ -151,29 +150,29 @@ class Agm_Mlm_Pages {
 
 	public function create_auto_assign_box() {
 		echo '' .
-			'<label for="agm-mlm-autogen">' . __( 'Auto-generated maps loading message', AGM_LANG ) . '</label>' .
+			'<label for="agm-mlm-autogen">' . __( 'Automatisch generierte Karten Lade-Nachricht', AGM_LANG ) . '</label>' .
 			'<input type="text" class="widefat" id="agm-mlm-autogen" name="agm_google_maps[mlm][autogen]" value="' . esc_attr( $this->_data['autogen'] ) . '" />' .
 		'<br />';
 		if ( class_exists( 'Agm_Bp_Pm_AdminPages' ) && defined( 'BP_VERSION' ) ) {
 			echo '' .
-				'<label for="agm-mlm-bp_profile">' . __( 'BuddyPress member directory map', AGM_LANG ) . '</label>' .
+				'<label for="agm-mlm-bp_profile">' . __( 'BuddyPress Mitgliederverzeichnis Karte', AGM_LANG ) . '</label>' .
 				'<input type="text" class="widefat" id="agm-mlm-bp_profile" name="agm_google_maps[mlm][bp_profile]" value="' . esc_attr( $this->_data['bp_profile'] ) . '" />' .
 			'<br />';
 		}
 		echo '' .
-			'<label for="agm-mlm-all">' . __( 'All maps loading message', AGM_LANG ) . '</label>' .
+			'<label for="agm-mlm-all">' . __( 'Alle Karten Lade-Nachricht', AGM_LANG ) . '</label>' .
 			'<input type="text" class="widefat" id="agm-mlm-all" name="agm_google_maps[mlm][all]" value="' . esc_attr( $this->_data['all'] ) . '" />' .
 		'<br />';
 		echo '' .
 			'<input type="hidden" name="agm_google_maps[mlm][cached_map]" value="" />' .
 			'<input type="checkbox" id="agm-mlm-cached_map" name="agm_google_maps[mlm][cached_map]" value="1" ' . checked( $this->_data['cached_map'], 1, false ) . '" />' .
 			'&nbsp;' .
-			'<label for="agm-mlm-cached_map">' . __( 'Use map tiles caching', AGM_LANG ) . '</label>' .
+			'<label for="agm-mlm-cached_map">' . __( 'Verwende Karten-Kachel-Caching', AGM_LANG ) . '</label>' .
 		'<br />';
 	}
 
 	private function _get_options() {
-		$default_msg = __( 'Map is loading, please hold on', AGM_LANG );
+		$default_msg = __( 'Karte wird geladen, bitte warten', AGM_LANG );
 		$opts = apply_filters( 'agm_google_maps-options-mlm', get_option( 'agm_google_maps' ) );
 		$opts = isset( $opts['mlm'] ) && $opts['mlm'] ? $opts['mlm'] : array();
 		return wp_parse_args(

@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: KML Overlay
-Description: Allows you to overlay a KML URL over your map (e.g. from Flickr: <code>http://api.flickr.com/services/feeds/geo/Zrenjanin?tags=sunflower&amp;lang=en-us&amp;format=kml_nl</code>). Also adds support for new <code>kml_url</code> attribute to your shortcodes. You can use the new attribute either standalone, or combined with your existing maps.
+Plugin Name: KML-Overlay
+Description: Ermöglicht es Dir, eine KML-URL über Deine Karte zu legen (z.B. von Flickr: <code>http://api.flickr.com/services/feeds/geo/Zrenjanin?tags=sunflower&amp;lang=en-us&amp;format=kml_nl</code>). Fügt außerdem Unterstützung für das neue Attribut <code>kml_url</code> zu Deinen Shortcodes hinzu. Du kannst das neue Attribut entweder alleinstehend oder in Kombination mit Deinen bestehenden Karten verwenden.
 Example:     [map id="1" kml_url="http://api.flickr.com/services/feeds/geo/Australia"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Kml_AdminPages {

@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Map location shortcode
-Description: Create a map inline in your posts, via a simple shortcode.
+Plugin Name: Kartenpositions-Shortcode
+Description: Erstelle eine Karte inline in Deinen Beiträgen, über einen einfachen Shortcode.
 Example:     [location address="202 / 120 Bay Street,Port Melbourne"], [location coordinates="-37.84119,144.94071"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Map_LocationShortcode extends AgmAddonBase {
@@ -89,7 +89,7 @@ class Agm_Map_LocationShortcode extends AgmAddonBase {
 			$map_id = $model->autocreate_map( false, $lat, $lng, false, $post_id, $args );
 
 			if ( ! $map_id ) {
-				$this->admin_note( __( 'Could not create map from shortcode', AGM_LANG ) );
+				$this->admin_note( __( 'Konnte keine Karte aus dem Shortcode erstellen', AGM_LANG ) );
 				return $content;
 			}
 
@@ -120,7 +120,7 @@ class Agm_Map_LocationShortcode extends AgmAddonBase {
 			$map_id = $model->autocreate_map( false, false, false, $address, $post_id, $args );
 
 			if ( ! $map_id ) {
-				$this->admin_note( __( 'Could not create map from shortcode', AGM_LANG ) );
+				$this->admin_note( __( 'Konnte keine Karte aus dem Shortcode erstellen', AGM_LANG ) );
 				return $content;
 			}
 

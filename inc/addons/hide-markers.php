@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Hide auto-created Markers
-Description: Cleans up your maps by hiding the map markers for maps auto-generated from custom fields.
+Plugin Name: Automatisch erstellte Marker ausblenden
+Description: Bereinigt Deine Karten, indem die Kartenmarker für Karten ausgeblendet werden, die automatisch aus benutzerdefinierten Feldern erstellt wurden.
 Example:     [map id="1" hide_map_markers="true"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Hacm_UserPages {

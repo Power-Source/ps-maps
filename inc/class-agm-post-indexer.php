@@ -1,8 +1,8 @@
 <?php
 /**
- * Integrates the WPMU Dev PostIndexer plugin:
- * Agm_PostIndexer is the local interface to communicate with the PostIndexer
- * plugin. Some Google Maps plugins will use this class, but not all.
+ * Integrates the PS Multisite Indexer plugin:
+ * Agm_PostIndexer is the local interface to communicate with the PS Multisite Indexer. 
+ * Some Google Maps plugins will use this class, but not all.
  */
 
 class Agm_PostIndexer {
@@ -74,5 +74,5 @@ class Agm_PostIndexer {
 	}
 
 }
-// Post Indexer (https://github.com/cp-psource/project/post-indexer) integration
+// Post Indexer (https://power-source.github.io/ps-postindexer/) integration
 define( 'AGM_USE_POST_INDEXER', Agm_PostIndexer::has_post_indexer() );

@@ -27,21 +27,21 @@ class Agm_AdminHelp {
 		return array(
 			array(
 				'id'      => 'agm_google_maps-options',
-				'title'   => __( 'Options', AGM_LANG ),
+				'title'   => __( 'Optionen', AGM_LANG ),
 				'content' => '' .
 					'<p>' . __(
-						'This is where you can set up your Google Maps Pro ' .
-						'default settings.', AGM_LANG
+						'Hier kannst Du PS Maps einrichten. ' .
+						'Standard-Einstellungen.', AGM_LANG
 					) . '</p>'
 			),
 			array(
 				'id'      => 'agm_google_maps-custom_fields',
-				'title'   => __( 'Custom fields', AGM_LANG ),
+				'title'   => __( 'Benutzerdefinierte Felder', AGM_LANG ),
 				'content' => '' .
 					'<p>' . __(
-						'This is where you can set up auto-creation of ' .
-						'new Google Maps, triggered by your existing ' .
-						'location custom fields.', AGM_LANG
+						'Hier kannst Du die automatische Erstellung von ' .
+						'neuen Google Maps einrichten, ausgelöst durch Deine vorhandenen ' .
+						'benutzerdefinierten Standortfelder.', AGM_LANG
 					) . '</p>'
 			),
 			array(
@@ -49,8 +49,8 @@ class Agm_AdminHelp {
 				'title'   => __( 'Add-ons', AGM_LANG ),
 				'content' => '' .
 					'<p>' . __(
-						'These are the optional additions for your Google' .
-						'Maps. Activate or deactivate them as needed.', AGM_LANG
+						'Dies sind die optionalen Erweiterungen für Deine PS ' .
+						'Maps. Aktiviere oder deaktiviere sie nach Bedarf.', AGM_LANG
 					) . '</p>'
 			),
 
@@ -59,7 +59,7 @@ class Agm_AdminHelp {
 
 	private function _get_default_sidebar() {
 		return '' .
-			'<h4>' . __( 'Google Maps Pro', AGM_LANG ) . '</h4>' .
+			'<h4>' . __( 'PS Maps', AGM_LANG ) . '</h4>' .
 			'<ul>' .
 				'<li>' .
 					'<a href="https://cp-psource.github.io/ps-maps/" target="_blank">' .

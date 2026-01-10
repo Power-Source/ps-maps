@@ -1,4 +1,4 @@
-Plugin Name: Google Maps Pro
+Plugin Name: PS Maps
 Author: DerN3rd (PSOURCE), DerN3rd (PSOURCE)
 
 Change Log:

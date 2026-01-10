@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Google Maps Pro
+ * Plugin Name: PS Maps
  * Plugin URI:  https://cp-psource.github.io/ps-maps/
  * Description: Easily embed, customize, and use Google maps on your WordPress site - in posts, pages or as an easy to use widget, display local images and let your site visitors get directions in seconds.
  * Version:     1.0.0

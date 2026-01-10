@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Responsive maps
-Description: Allows your maps to be full width and contract/expand with your page size.
+Plugin Name: Responsive Karten
+Description: Ermöglicht es, dass Deine Karten die volle Breite einnehmen und sich mit der Größe Deiner Seite anpassen.
 Example:     [map id="1" is_responsive="true"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Rmaps_Pages {
@@ -105,13 +105,13 @@ class Agm_Rmaps_Pages {
 	public function register_settings() {
 		add_settings_section(
 			'agm_google_maps_rmaps',
-			__( 'Responsive maps', AGM_LANG ),
+			__( 'Responsive Karten', AGM_LANG ),
 			array( $this, 'create_section_notice' ),
 			'agm_google_maps_options_page'
 		);
 		add_settings_field(
 			'agm_google_maps_auto_assign',
-			__( 'Make these maps responsive', AGM_LANG ),
+			__( 'Mache diese Karten responsiv', AGM_LANG ),
 			array( $this, 'create_auto_assign_box' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_rmaps'
@@ -120,7 +120,7 @@ class Agm_Rmaps_Pages {
 
 	public function create_section_notice() {
 		echo '<em>' .
-			__( 'You can toggle the responsive flag in your shortcodes with <code>is_responsive="yes|no"</code> shortcode attribute. You can also specify which ones of your maps should always be responsive.', AGM_LANG ) .
+			__( 'Du kannst das Responsive-Flag in Deinen Shortcodes mit dem Shortcode-Attribut <code>is_responsive="yes|no"</code> umschalten. Du kannst auch angeben, welche Deiner Karten immer responsiv sein sollen.', AGM_LANG ) .
 		'</em>';
 	}
 
@@ -132,7 +132,7 @@ class Agm_Rmaps_Pages {
 			'<input type="hidden" name="agm_google_maps[rmaps][auto_assign-autogen]" value="" />' .
 			'<input type="checkbox" id="agm-rmaps-auto_assign-autogen" name="agm_google_maps[rmaps][auto_assign-autogen]" value="1" ' . $autogen . ' />' .
 			'&nbsp;' .
-			'<label for="agm-rmaps-auto_assign-autogen">' . __( 'Auto-generated maps', AGM_LANG ) . '</label>' .
+			'<label for="agm-rmaps-auto_assign-autogen">' . __( 'Automatisch generierte Karten', AGM_LANG ) . '</label>' .
 		'<br />';
 		if ( class_exists( 'Agm_Bp_Pm_AdminPages' ) && defined( 'BP_VERSION' ) ) {
 			$bp_profile = isset( $opts['auto_assign-bp_profile'] ) && $opts['auto_assign-bp_profile'] ? 'checked="checked"' : '';
@@ -140,7 +140,7 @@ class Agm_Rmaps_Pages {
 				'<input type="hidden" name="agm_google_maps[rmaps][auto_assign-bp_profile]" value="" />' .
 				'<input type="checkbox" id="agm-rmaps-auto_assign-bp_profile" name="agm_google_maps[rmaps][auto_assign-bp_profile]" value="1" ' . $bp_profile . ' />' .
 				'&nbsp;' .
-				'<label for="agm-rmaps-auto_assign-bp_profile">' . __( 'BuddyPress member directory map', AGM_LANG ) . '</label>' .
+				'<label for="agm-rmaps-auto_assign-bp_profile">' . __( 'BuddyPress Mitgliederverzeichnis-Karte', AGM_LANG ) . '</label>' .
 			'<br />';
 		}
 		$all = isset( $opts['auto_assign-all'] ) && $opts['auto_assign-all'] ? 'checked="checked"' : '';
@@ -148,7 +148,7 @@ class Agm_Rmaps_Pages {
 			'<input type="hidden" name="agm_google_maps[rmaps][auto_assign-all]" value="" />' .
 			'<input type="checkbox" id="agm-rmaps-auto_assign-all" name="agm_google_maps[rmaps][auto_assign-all]" value="1" ' . $all . ' />' .
 			'&nbsp;' .
-			'<label for="agm-rmaps-auto_assign-all">' . __( 'All my maps <small>(except the ones I manually exclude with <code>is_responsive="no"</code> shortcode attribute)</small>', AGM_LANG ) . '</label>' .
+			'<label for="agm-rmaps-auto_assign-all">' . __( 'Alle meine Karten <small>(außer denen, die ich manuell mit dem Shortcode-Attribut <code>is_responsive="no"</code> ausschließe)</small>', AGM_LANG ) . '</label>' .
 		'<br />';
 
 		$respect_width = isset( $opts['auto_assign-respect_width'] ) && $opts['auto_assign-respect_width'] ? 'checked="checked"' : '';
@@ -156,8 +156,8 @@ class Agm_Rmaps_Pages {
 			'<input type="hidden" name="agm_google_maps[rmaps][auto_assign-respect_width]" value="" />' .
 			'<input type="checkbox" id="agm-rmaps-auto_assign-respect_width" name="agm_google_maps[rmaps][auto_assign-respect_width]" value="1" ' . $respect_width . ' />' .
 			'&nbsp;' .
-			'<label for="agm-rmaps-auto_assign-respect_width">' . __( 'Respect shortcode width attribute, if set', AGM_LANG ) . '</label>' .
-			'<div><small>' . __( 'If set, this option will force your maps with width shortcode attribute set to scale relative to their original size, rather then expanding the full width of parent element.', AGM_LANG ) . '</small></div>' .
+			'<label for="agm-rmaps-auto_assign-respect_width">' . __( 'Respektiere das Shortcode-Breitenattribut, falls gesetzt', AGM_LANG ) . '</label>' .
+			'<div><small>' . __( 'Wenn diese Option aktiviert ist, werden Karten mit einem gesetzten Breiten-Shortcode-Attribut relativ zu ihrer Originalgröße skaliert, anstatt die volle Breite des übergeordneten Elements einzunehmen.', AGM_LANG ) . '</small></div>' .
 		'<br />';
 	}
 

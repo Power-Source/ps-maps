@@ -55,15 +55,15 @@ if ( ! is_admin() ) { // Doesn't work on admin
 			lib3()->ui->data(
 				'l10nStrings',
 				array(
-					'close' => __( 'Close', AGM_LANG ),
-					'get_directions' => __( 'Get Directions', AGM_LANG ),
-					'geocoding_error' => __( 'There was an error geocoding your location. Check the address and try again', AGM_LANG ),
-					'missing_waypoint' => __( 'Please, enter values for both point A and point B', AGM_LANG ),
-					'directions' => __( 'Directions', AGM_LANG ),
-					'posts' => __( 'Posts', AGM_LANG ),
-					'showAll' => __( 'Show All', AGM_LANG ),
-					'hide' => __( 'Hide', AGM_LANG ),
-					'oops_no_directions' => __( 'Oops, we couldn\'t calculate the directions', AGM_LANG ),
+					'close' => __( 'Schließen', AGM_LANG ),
+					'get_directions' => __( 'Wegbeschreibung erhalten', AGM_LANG ),
+					'geocoding_error' => __( 'Beim Geokodieren Ihres Standorts ist ein Fehler aufgetreten. Überprüfen Sie die Adresse und versuchen Sie es erneut', AGM_LANG ),
+					'missing_waypoint' => __( 'Bitte geben Sie Werte für sowohl Punkt A als auch Punkt B ein', AGM_LANG ),
+					'directions' => __( 'Wegbeschreibung', AGM_LANG ),
+					'posts' => __( 'Beiträge', AGM_LANG ),
+					'showAll' => __( 'Alle anzeigen', AGM_LANG ),
+					'hide' => __( 'Verbergen', AGM_LANG ),
+					'oops_no_directions' => __( 'Hoppla, wir konnten die Wegbeschreibung nicht berechnen', AGM_LANG ),
 				),
 				'front'
 			);

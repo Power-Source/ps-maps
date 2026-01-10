@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Marker cluster
-Description: Cleans up your maps by grouping nearby markers into clusters. This will automatically affect all maps when activated.
+Plugin Name: Markercluster
+Description: Bereinigt Deine Karten, indem nahe beieinander liegende Marker zu Clustern zusammengefasst werden. Dies wirkt sich automatisch auf alle Karten aus, wenn aktiviert.
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Mc_UserPages {

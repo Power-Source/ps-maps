@@ -58,11 +58,11 @@ class AgmMapsWidget extends WP_Widget {
 		$show_posts = $show_posts ? $show_posts : 1;
 
 		$zoom_items = array(
-			'1' => __( 'Earth', AGM_LANG ),
-			'3' => __( 'Continent', AGM_LANG ),
+			'1' => __( 'Erde', AGM_LANG ),
+			'3' => __( 'Kontinent', AGM_LANG ),
 			'5' => __( 'Region', AGM_LANG ),
-			'7' => __( 'Nearby Cities', AGM_LANG ),
-			'12' => __( 'City Plan', AGM_LANG ),
+			'7' => __( 'Nahegelegene Städte', AGM_LANG ),
+			'12' => __( 'Stadtplan', AGM_LANG ),
 			'15' => __( 'Details', AGM_LANG ),
 		);
 

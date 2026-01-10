@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Center map on location
-Description: Adds a "Center" button to the Map Editor to manually set the center position.<br />Optionally the map center can be defined with a shortcode attribute that takes a comma-separated latitude/longitude pair.
+Plugin Name: Kartenstandort zentrieren
+Description: Fügt dem Karten-Editor eine "Zentrieren"-Schaltfläche hinzu, um die Kartenmitte manuell festzulegen.<br />Optional kann die Kartenmitte mit einem Shortcode-Attribut definiert werden, das ein durch Komma getrenntes Breitengrad/Längengrad-Paar erwartet.
 Example:     [map id="12" center="45.359,20.412"]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.1
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 

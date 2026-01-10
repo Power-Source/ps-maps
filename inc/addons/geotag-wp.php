@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Geotag my posts
-Description: Allows you to add location context to your posts, pages or custom post types.<br />Activate the Add-on and then select which post-types you want to geotag. After this you will find a new metabox in the post editor where you can enter an address. <br>To display a map with all geo-tagged posts use the shortcode <code>[agm_gwp_geocoded_posts]</code>
+Plugin Name: Beiträge mit Geotags versehen
+Description: Ermöglicht es Dir, Deinen Beiträgen, Seiten oder benutzerdefinierten Beitragstypen Standortkontext hinzuzufügen.<br />Aktiviere das Add-on und wähle dann aus, für welche Beitragstypen Du Geotags verwenden möchtest. Danach findest Du im Beitragseditor eine neue Metabox, in der Du eine Adresse eingeben kannst. <br>Um eine Karte mit allen geo-getaggten Beiträgen anzuzeigen, verwende den Shortcode <code>[agm_gwp_geocoded_posts]</code>
 Example:     [agm_gwp_geocoded_posts]
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_GwpAdminPages {
@@ -43,14 +43,14 @@ class Agm_GwpAdminPages {
 	public function register_settings() {
 		add_settings_section(
 			'agm_google_maps_gwp',
-			__( 'Geotag my posts', AGM_LANG ),
+			__( 'Beiträge mit Geotags versehen', AGM_LANG ),
 			'__return_false',
 			'agm_google_maps_options_page'
 		);
 
 		add_settings_field(
 			'agm_google_maps_fbnf_fb',
-			__( 'Geotagging metabox', AGM_LANG ),
+			__( 'Geotagging-Metabox', AGM_LANG ),
 			array( $this, 'create_post_types_box' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_gwp'
@@ -61,7 +61,7 @@ class Agm_GwpAdminPages {
 		$selected_types = $this->_data->get_option( 'post_types' );
 		$selected_types = $selected_types ? $selected_types : array();
 		$post_types = get_post_types( array( 'public' => true ), 'objects' );
-		echo '<label for="agm-gwp-post_types">' . __( 'Show geotagging metabox for', AGM_LANG ) . ':</label><br />';
+		echo '<label for="agm-gwp-post_types">' . __( 'Geotagging-Metabox anzeigen für', AGM_LANG ) . ':</label><br />';
 		foreach ( $post_types as $type => $obj ) : ?>
 			<label for="agm-gwp-post_type-<?php echo esc_attr( $type ); ?>">
 				<input type="checkbox"
@@ -81,7 +81,7 @@ class Agm_GwpAdminPages {
 		foreach ( $post_types as $type ) {
 			add_meta_box(
 				'',
-				__( 'Location', AGM_LANG ),
+				__( 'Standort', AGM_LANG ),
 				array( $this, 'render_metabox' ),
 				$type,
 				'side',
@@ -242,7 +242,7 @@ class Agm_GwpModel {
 				$excerpt .
 			'</p>' .
 			'<a href="' . get_permalink( $post->ID ) . '">' .
-				__( 'Read more', AGM_LANG ) .
+				__( 'Mehr erfahren', AGM_LANG ) .
 			'</a>';
 
 		return array(

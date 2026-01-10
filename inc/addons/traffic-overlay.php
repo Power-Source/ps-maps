@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Traffic overlay
-Description: Gives you the possibility to show the traffic overlay on your map. You can either enable it "Map Options", or with the shortcode attribute like so: <code>show_traffic="true"</code>.<br />E.g. <code>[map id="1" show_traffic="true"]</code>
+Plugin Name: Verkehrsüberlagerung
+Description: Ermöglicht die Anzeige der Verkehrsüberlagerung auf Deiner Karte. Du kannst sie entweder in den "Kartenoptionen" aktivieren oder mit dem Shortcode-Attribut wie folgt: <code>show_traffic="true"</code>.<br />Zum Beispiel: <code>[map id="1" show_traffic="true"]</code>
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Traffic_AdminPages {
@@ -55,7 +55,7 @@ class Agm_Traffic_AdminPages {
 	public function load_scripts() {
 		$data = array(
 			'lang' => array(
-				'show_traffic' => __( 'Show traffic', AGM_LANG ),
+				'show_traffic' => __( 'Verkehr anzeigen', AGM_LANG ),
 			),
 		);
 

@@ -45,11 +45,11 @@ class AgmGdpr {
 	 */
 	public function register_data_exporter( $exporters ) {
 		$exporters['agm_google_maps-autocreated'] = array(
-			'exporter_friendly_name' => __( 'Von PS-Maps automatisch erstellte Karten', 'psmaps' ),
+			'exporter_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', 'psmaps' ),
 			'callback' => array( $this, 'export_autocreated_maps' ),
 		);
 		$exporters['agm_google_maps-associated'] = array(
-			'exporter_friendly_name' => __( 'Mit PS-Maps verknüpfte Karten', 'psmaps' ),
+			'exporter_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', 'psmaps' ),
 			'callback' => array( $this, 'export_associated_maps' ),
 		);
 		return $exporters;
@@ -64,11 +64,11 @@ class AgmGdpr {
 	 */
 	public function register_data_eraser( $erasers ) {
 		$erasers['agm_google_maps-autocreated'] = array(
-			'eraser_friendly_name' => __( 'Von PS-Maps automatisch erstellte Karten', 'psmaps' ),
+			'eraser_friendly_name' => __( 'Von PS Maps automatisch erstellte Karten', 'psmaps' ),
 			'callback' => array( $this, 'erase_autocreated_maps' ),
 		);
 		$erasers['agm_google_maps-associated'] = array(
-			'eraser_friendly_name' => __( 'Mit PS-Maps verknüpfte Karten', 'psmaps' ),
+			'eraser_friendly_name' => __( 'Mit PS Maps verknüpfte Karten', 'psmaps' ),
 			'callback' => array( $this, 'erase_associated_maps' ),
 		);
 		return $erasers;

@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Additional Behaviors
-Description: Exposes additional map default behaviors as global map options:<br>- Click on item in marker-list opens the detail popup<br>- Click on directions link scrolls to the directions form
+Plugin Name: Zusätzliche Verhaltensweisen
+Description: Stellt zusätzliche Standardverhalten der Karte als globale Kartenoptionen bereit:<br>- Klick auf Element in der Markerliste öffnet das Detail-Popup<br>- Klick auf Wegbeschreibung-Link scrollt zum Wegbeschreibungsformular
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Mab_AdditionalBehaviors {
@@ -44,13 +44,13 @@ class Agm_Mab_AdditionalBehaviors {
 	public function register_settings() {
 		add_settings_section(
 			'agm_google_maps_mab',
-			__( 'Additional Behaviors', AGM_LANG ),
+			__( 'Zusätzliche Verhaltensweisen', AGM_LANG ),
 			array( $this, 'create_section' ),
 			'agm_google_maps_options_page'
 		);
 		add_settings_field(
 			'agm_google_maps_list_kmls',
-			__( 'Behaviors', AGM_LANG ),
+			__( 'Verhaltensweisen', AGM_LANG ),
 			array( $this, 'create_behaviors_box' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_mab'
@@ -61,7 +61,7 @@ class Agm_Mab_AdditionalBehaviors {
 		?>
 		<p>
 			<em>
-			<?php _e( 'This is where you can define additional global settings for your maps.', AGM_LANG ); ?>
+			<?php _e( 'Hier kannst Du zusätzliche globale Einstellungen für Deine Karten definieren.', AGM_LANG ); ?>
 			</em>
 		</p>
 		<?php
@@ -80,7 +80,7 @@ class Agm_Mab_AdditionalBehaviors {
 				name="agm_google_maps[mab][marker_click_popup]"
 				<?php checked( $opts['marker_click_popup'], true ); ?> />
 			&nbsp
-			<?php _e( 'Click on item in marker-list opens the detail popup', AGM_LANG ); ?>
+			<?php _e( 'Klick auf Element in der Markerliste öffnet das Detail-Popup', AGM_LANG ); ?>
 		</label>
 		<br />
 
@@ -94,7 +94,7 @@ class Agm_Mab_AdditionalBehaviors {
 				name="agm_google_maps[mab][directions_click_scroll]"
 				<?php checked( $opts['directions_click_scroll'], true ); ?> />
 			&nbsp
-			<?php _e( 'Click on directions link scrolls to the directions form', AGM_LANG ); ?>
+			<?php _e( 'Klick auf Wegbeschreibung-Link scrollt zum Wegbeschreibungsformular', AGM_LANG ); ?>
 		</label>
 		<br />
 		<?php

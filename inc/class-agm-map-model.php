@@ -510,7 +510,7 @@ class AgmMapModel {
 			);
 			$start = $page ? $page * $limit : 0;
 			$stop = $limit;
-			$paged = "LIMIT {$start}, {$stop}";
+			$paged = $wpdb->prepare( 'LIMIT %d, %d', absint( $start ), absint( $stop ) );
 		}
 		$table = $this->get_table_name();
 		return $wpdb->get_results( "SELECT id, title FROM {$table} {$paged}", ARRAY_A );

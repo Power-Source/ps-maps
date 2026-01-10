@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Custom Icons
-Description: Enable this add-on to add your own map marker icons! The custom icons can be selected when you edit a marker inside the Map Editor.
+Plugin Name: Benutzerdefinierte Symbole
+Description: Aktiviere dieses Add-on, um Deine eigenen Kartenmarkierungssymbole hinzuzufügen! Die benutzerdefinierten Symbole können ausgewählt werden, wenn Du einen Marker im Karten-Editor bearbeitest.
 Plugin URI:  https://cp-psource.github.io/ps-maps/
 Version:     1.0
-Author:      DerN3rd (PSOURCE)
+Author:      PSOURCE
 */
 
 class Agm_Icons_AdminPages {
@@ -52,14 +52,14 @@ class Agm_Icons_AdminPages {
 	public function register_settings() {
 		add_settings_section(
 			'agm_google_maps_icons',
-			__( 'Custom icons', AGM_LANG ),
+			__( 'Benutzerdefinierte Symbole', AGM_LANG ),
 			function() { /* Leerer Callback für die Beschreibung */ },
 			'agm_google_maps_options_page'
 		);
 
 		add_settings_field(
 			'agm_google_maps_icon_add',
-			__( 'Add new icons', AGM_LANG ),
+			__( 'Neues Symbol hinzufügen', AGM_LANG ),
 			array( $this, 'render_settings_box_add' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_icons'
@@ -67,7 +67,7 @@ class Agm_Icons_AdminPages {
 
 		add_settings_field(
 			'agm_google_maps_icon_list',
-			__( 'Custom icons', AGM_LANG ),
+			__( 'Benutzerdefinierte Symbole', AGM_LANG ),
 			array( $this, 'render_settings_box_icons' ),
 			'agm_google_maps_options_page',
 			'agm_google_maps_icons'
@@ -109,24 +109,24 @@ class Agm_Icons_AdminPages {
 	public function render_settings_box_add() {
 		?>
 		<div>
-			<label for="custom-icon"><?php _e( 'Icon URL', AGM_LANG ); ?>:</label>
+			<label for="custom-icon"><?php _e( 'Symbol-URL', AGM_LANG ); ?>:</label>
 			<input type="url" class="custom-icon-url" id="custom-icon" value="" style="display:block;width:100%" placeholder="http://..." maxlength="1024" />
 		</div>
 		<div>
 			<span style="float: left"><img src="" class="custom-icon-preview marker-icon-32" /></span>
 			<button type="button" class="add-custom-icon button disabled" disabled="disabled"
-				data-enabled="<?php _e( 'Add this icon', AGM_LANG ); ?>"
-				data-disabled="<?php _e( 'Enter a valid image URL', AGM_LANG ); ?>"
+				data-enabled="<?php _e( 'Dieses Symbol hinzufügen', AGM_LANG ); ?>"
+				data-disabled="<?php _e( 'Gib eine gültige Bild-URL ein', AGM_LANG ); ?>"
 				>
 			</button>
 		</div>
 		<br />
 		<div style="clear: both">
-			<button type="button" class="add-media-image button"><?php _e( 'Add icon from media library', AGM_LANG ); ?></button>
+			<button type="button" class="add-media-image button"><?php _e( 'Symbol aus der Mediathek hinzufügen', AGM_LANG ); ?></button>
 		</div>
 		<br />
 		<div>
-			<em><?php _e( 'Note: All icons will be displayed in full-size on the map. In the editor and this list the icon-preview is displayed with 32 x 32 pixels.', AGM_LANG ); ?></em>
+			<em><?php _e( 'Hinweis: Alle Symbole werden in voller Größe auf der Karte angezeigt. Im Editor und in dieser Liste wird die Symbolvorschau mit 32 x 32 Pixeln angezeigt.', AGM_LANG ); ?></em>
 		</div>
 		<?php
 	}
