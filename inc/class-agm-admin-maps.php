@@ -282,8 +282,6 @@ class AgmAdminMaps {
 		lib3()->ui->data( '_agm', $vars );
 		lib3()->ui->data( '_agm_root_url', AGM_PLUGIN_URL );
 
-		lib3()->ui->js( 'wpdialogs' );
-		lib3()->ui->js( 'jquery-ui-dialog' );
 		lib3()->ui->add( AGM_PLUGIN_URL . 'js/loader.js' );
 		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/google-maps.js' );
 	}
@@ -408,7 +406,6 @@ class AgmAdminMaps {
 	 * Includes required styles.
 	 */
 	public function css_load_styles() {
-		lib3()->ui->css( 'wp-jquery-ui-dialog' );
 		lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.min.css' );
 	}
 
