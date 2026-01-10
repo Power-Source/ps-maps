@@ -18,7 +18,8 @@ jQuery(document).bind(
 		jQuery.post(
 			window.ajaxurl,
 			{
-				'action': 'agm_list_kml_uploads'
+				'action': 'agm_list_kml_uploads',
+				'nonce': _agm.nonce
 			},
 			function( data ) {
 				html += '<select class="widefat" id="agm-kml_uploaded_file">';

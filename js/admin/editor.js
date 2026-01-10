@@ -98,7 +98,8 @@ jQuery(function() {
 	 */
 	function requestMapList() {
 		var data = {
-			'action': 'agm_list_maps'
+			'action': 'agm_list_maps',
+			'nonce': _agm.nonce
 		};
 
 		jQuery.post(
@@ -168,6 +169,7 @@ jQuery(function() {
 							window.ajaxurl,
 							{
 								'action': 'agm_list_maps',
+								'nonce': _agm.nonce,
 								'increment': prev_increment
 							},
 							loadMaps
@@ -187,6 +189,7 @@ jQuery(function() {
 							window.ajaxurl,
 							{
 								"action": 'agm_list_maps',
+								"nonce": _agm.nonce,
 								"increment": next_increment
 							},
 							loadMaps
@@ -231,6 +234,7 @@ jQuery(function() {
 			window.ajaxurl,
 			{
 				'action': 'agm_delete_map',
+				'nonce': _agm.nonce,
 				'id': map_id
 			},
 			function( data ) {
@@ -382,6 +386,7 @@ jQuery(function() {
 			window.ajaxurl,
 			{
 				'action': 'agm_load_map',
+				'nonce': _agm.nonce,
 				'id': id
 			},
 			display_map_details
@@ -401,7 +406,8 @@ jQuery(function() {
 		jQuery.post(
 			window.ajaxurl,
 			{
-				'action': 'agm_new_map'
+				'action': 'agm_new_map',
+				'nonce': _agm.nonce
 			},
 			display_map_details
 		);
@@ -515,6 +521,7 @@ jQuery(function() {
 			window.ajaxurl,
 			{
 				'action': 'agm_merge_maps',
+				'nonce': _agm.nonce,
 				'ids': map_ids
 			},
 			function( data ) {
@@ -562,6 +569,7 @@ jQuery(function() {
 		jQuery.post(
 			window.ajaxurl,
 			{
+				'nonce': _agm.nonce,
 				'action': 'agm_batch_delete',
 				'ids': map_ids
 			},

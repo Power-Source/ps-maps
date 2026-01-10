@@ -40,7 +40,7 @@ jQuery(function() {
 
 		jQuery.post(
 			window.ajaxurl,
-			{"action": 'agm_new_map'},
+			{"action": 'agm_new_map', "nonce": _agm.nonce},
 			function (data) {
 				if ( _mapHandler ) { _mapHandler.destroy(); }
 				_mapHandler = new window.AgmMapHandler("#map_editor", data, false);
@@ -59,7 +59,8 @@ jQuery(function() {
 		jQuery.post(
 			window.ajaxurl,
 			{
-				"action": "agm_list_maps"
+				'action': 'agm_list_maps',
+				'nonce': _agm.nonce
 			},
 			function (data) {
 				if ( typeof data !== 'object' || undefined === data.maps || ! data.total ) {

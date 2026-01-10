@@ -597,7 +597,8 @@ class Agm_AdminFormRenderer {
 		<script type="text/javascript">
 		(function() {
 			var list = jQuery( '.plugins' ),
-				filters = jQuery( '.subsubsub > a' );
+				filters = jQuery( '.subsubsub > a' ),
+				nonce = '<?php echo esc_js( wp_create_nonce( 'agm_google_maps' ) ); ?>';
 
 			jQuery( document ).on( 'click', '.agm_plugin', function(ev) {
 				var me = jQuery( this ),
@@ -608,7 +609,8 @@ class Agm_AdminFormRenderer {
 					ajaxurl,
 					{
 						"action": action,
-						"plugin": plugin_id
+						"plugin": plugin_id,
+						"nonce": nonce
 					},
 					function( data ) {
 						// On success reload the window

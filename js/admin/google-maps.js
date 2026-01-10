@@ -100,8 +100,7 @@ jQuery(function( ) {
 			var height = jQuery('#agm_map_size_y').is(':enabled') ? jQuery('#agm_map_size_y').val() : 0;
 			var alignment = jQuery('input.agm_map_alignment_element:checked').val();
 			var request = {
-				"action": "agm_save_map",
-				"id": jQuery('#agm_mh_map_id').val(),
+				"action": "agm_save_map",			"nonce": _agm.nonce,				"id": jQuery('#agm_mh_map_id').val(),
 				"title": title,
 				"height": height,
 				"width": width,
@@ -179,10 +178,11 @@ jQuery(function( ) {
 				jQuery('#agm_map_size_associate').attr('checked', false); // Not associated, default to false
 				return false;
 			}
-			jQuery.post(
+			JQuery.post(
 				window.ajaxurl,
 				{
 					"action": "agm_get_post_titles",
+					"nonce": _agm.nonce,
 					"post_ids": data.post_ids
 				},
 				function ( data ) {
@@ -793,7 +793,7 @@ jQuery(function( ) {
 
 			jQuery.post(
 				window.ajaxurl,
-				{"action": "agm_list_icons"},
+				{"action": "agm_list_icons", "nonce": _agm.nonce},
 				function ( data ) {
 					var html = '';
 
