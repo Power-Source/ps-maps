@@ -469,7 +469,7 @@ class AgmMapModel {
 				$bid = absint( $bid );
 			}
 
-			if ( is_array( @$blogs_to_posts[$bid] ) ) {
+			if ( is_array( $blogs_to_posts[$bid] ?? null ) ) {
 				$blogs_to_posts[$bid] = array_merge( $blogs_to_posts[$bid], array( absint( $v ) ) );
 			} else {
 				$blogs_to_posts[$bid] = array( absint( $v ) );
@@ -628,7 +628,7 @@ class AgmMapModel {
 		// Set all values in the array to boolean FALSE
 		$ret = array_filter( $defaults );
 
-		$ret['snapping'] = (int) @$defaults['snapping'];
+		$ret['snapping'] = (int) ( $defaults['snapping'] ?? 0 );
 		if ( isset( $defaults['directions_snapping'] ) ) {
 			$ret['directions_snapping'] = (int) $defaults['directions_snapping'];
 		} else {
@@ -772,48 +772,24 @@ class AgmMapModel {
 				'markers'                => $markers,
 				'defaults'               => $defaults,
 				'post_ids'               => array_values( $post_ids ), // Reindex array (prevent conversion to object)
-				'id'                     => @$map['id'],
-				'title'                  => @$map['title'],
-				'height'                 => @$options['height'],
-				'width'                  => @$options['width'],
-				'zoom'                   => @$options['zoom'],
-				'map_type'               => @$options['map_type'],
-				'map_alignment'          => @$options['map_alignment'],
-				'show_map'               => agm_positive_values( @$options['show_map'], 1, 0 ),
-				'show_posts'             => agm_positive_values( @$options['show_posts'], 1, 0 ),
-				'show_markers'           => agm_positive_values( @$options['show_markers'], 1, 0 ),
-				'show_images'            => agm_positive_values( @$options['show_images'], 1, 0 ),
-				'image_size'             => @$options['image_size'],
-				'image_limit'            => @$options['image_limit'],
-				'street_view'            => @$options['street_view'],
-				'street_view_pos'        => @$options['street_view_pos'],
-				'street_view_pov'        => @$options['street_view_pov'],
-			)
-		);
-
-		if ( isset( $map['blog_id'] ) ) {
-			$result['blog_id'] = $map['blog_id'];
-		}
-
-		$result['markers'] = apply_filters( 'agm-load-markers', $result['markers'], $markers );
-		$result = apply_filters( 'agm-load-options', $result, $options );
-
-		return $result;
-	}
-
-	/**
-	 * Safely unserialize data without allowing object instantiation.
-	 *
-	 * @param mixed $data Serialized data
-	 * @return mixed Unserialized data or empty array on failure
-	 */
-	private function safe_unserialize( $data ) {
-		if ( empty( $data ) ) {
-			return array();
-		}
-		
-		// Use allowed_classes option to prevent object injection
-		$unserialized = @unserialize( $data, array( 'allowed_classes' => false ) );
+			'id'                     => $map['id'] ?? null,
+			'title'                  => $map['title'] ?? '',
+			'height'                 => $options['height'] ?? '',
+			'width'                  => $options['width'] ?? '',
+			'zoom'                   => $options['zoom'] ?? '',
+			'map_type'               => $options['map_type'] ?? '',
+			'map_alignment'          => $options['map_alignment'] ?? '',
+			'show_map'               => agm_positive_values( $options['show_map'] ?? null, 1, 0 ),
+			'show_posts'             => agm_positive_values( $options['show_posts'] ?? null, 1, 0 ),
+			'show_markers'           => agm_positive_values( $options['show_markers'] ?? null, 1, 0 ),
+			'show_images'            => agm_positive_values( $options['show_images'] ?? null, 1, 0 ),
+			'image_size'             => $options['image_size'] ?? '',
+			'image_limit'            => $options['image_limit'] ?? '',
+			'street_view'            => $options['street_view'] ?? '',
+			'street_view_pos'        => $options['street_view_pos'] ?? '',
+			'street_view_pov'        => $options['street_view_pov'] ?? '',
+		)
+);
 		
 		if ( $unserialized === false && $data !== 'b:0;' ) {
 			return array();
@@ -841,30 +817,30 @@ class AgmMapModel {
 				}
 			}
 		}
-		$post_ids = is_array( @$data['post_ids'] ) ? array_unique( $data['post_ids'] ) : array();
+	$post_ids = is_array( $data['post_ids'] ?? null ) ? array_unique( $data['post_ids'] ) : array();
 
-		// Pack options
-		$map_options = array(
-			'height'                 => @$data['height'],
-			'width'                  => @$data['width'],
-			'zoom'                   => @$data['zoom'],
-			'map_type'               => strtoupper( @$data['map_type'] ),
-			'map_alignment'          => strtolower( @$data['map_alignment'] ),
-			'show_map'               => agm_positive_values( @$data['show_map'], 1, 0 ),
-			'show_posts'             => agm_positive_values( @$data['show_posts'], 1, 0 ),
-			'show_markers'           => agm_positive_values( @$data['show_markers'], 1, 0 ),
-			'show_images'            => agm_positive_values( @$data['show_images'], 1, 0 ),
-			'image_size'             => @$data['image_size'],
-			'image_limit'            => (int) @$data['image_limit'],
-			'street_view'            => @$data['street_view'],
-			'street_view_pos'        => @$data['street_view_pos'],
-			'street_view_pov'        => @$data['street_view_pov'],
-		);
+	// Pack options
+	$map_options = array(
+		'height'                 => $data['height'] ?? '',
+		'width'                  => $data['width'] ?? '',
+		'zoom'                   => $data['zoom'] ?? '',
+		'map_type'               => strtoupper( $data['map_type'] ?? '' ),
+		'map_alignment'          => strtolower( $data['map_alignment'] ?? '' ),
+		'show_map'               => agm_positive_values( $data['show_map'] ?? null, 1, 0 ),
+		'show_posts'             => agm_positive_values( $data['show_posts'] ?? null, 1, 0 ),
+		'show_markers'           => agm_positive_values( $data['show_markers'] ?? null, 1, 0 ),
+		'show_images'            => agm_positive_values( $data['show_images'] ?? null, 1, 0 ),
+		'image_size'             => $data['image_size'] ?? '',
+		'image_limit'            => (int) ( $data['image_limit'] ?? 0 ),
+		'street_view'            => $data['street_view'] ?? '',
+		'street_view_pos'        => $data['street_view_pos'] ?? '',
+		'street_view_pov'        => $data['street_view_pov'] ?? '',
+	);
 
-		$data['title'] = apply_filters( 'agm-save-title', $data['title'], $data );
-		$data['markers'] = apply_filters( 'agm-save-markers', $data['markers'], $data );
-		$post_ids = apply_filters( 'agm-save-post-ids', $post_ids, $data );
-		$map_options = apply_filters( 'agm-save-options', $map_options, $data );
+	$data['title'] = apply_filters( 'agm-save-title', $data['title'], $data );
+	$data['markers'] = apply_filters( 'agm-save-markers', $data['markers'], $data );
+	$post_ids = apply_filters( 'agm-save-post-ids', $post_ids, $data );
+	$map_options = apply_filters( 'agm-save-options', $map_options, $data );
 
 		// Make sure we fit
 		$data['title'] = substr($data['title'], 0, 50);
@@ -914,7 +890,7 @@ class AgmMapModel {
 					if ( ! empty( $map['post_ids'] ) ) {
 						$post_ids = array_merge( $post_ids, $map['post_ids'] );
 					}
-					if ( is_array( @$new_markers[$mid]['post_ids'] ) ) {
+					if ( is_array( $new_markers[$mid]['post_ids'] ?? null ) ) {
 						$new_markers[$mid]['post_ids'] = array_merge( $new_markers[$mid]['post_ids'], $post_ids );
 					} else {
 						$new_markers[$mid]['post_ids'] = $post_ids;

@@ -38,12 +38,12 @@ class Agm_AdminFormRenderer {
 
 	public function create_height_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		echo '' . $this->_create_small_text_box( 'height', @$opt['height'] ) . 'px';
+		echo '' . $this->_create_small_text_box( 'height', $opt['height'] ?? '' ) . 'px';
 	}
 
 	public function create_width_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		echo '' . $this->_create_small_text_box( 'width', @$opt['width'] ) . 'px';
+		echo '' . $this->_create_small_text_box( 'width', $opt['width'] ?? '' ) . 'px';
 	}
 
 	public function create_image_limit_box() {
@@ -62,7 +62,7 @@ class Agm_AdminFormRenderer {
 		);
 		echo '<select id="map_type" name="agm_google_maps[map_type]">';
 		foreach ( $items as $item => $lbl ) {
-			$selected = ( @$opt['map_type'] == $item ) ? 'selected="selected"' : '';
+			$selected = ( ( $opt['map_type'] ?? '' ) == $item ) ? 'selected="selected"' : '';
 			echo '<option value="' . $item . '" ' . $selected . '>' . $lbl . '</option>';
 		}
 		echo '</select>';
@@ -176,7 +176,7 @@ class Agm_AdminFormRenderer {
 		);
 		echo '<select id="zoom" name="agm_google_maps[units]">';
 		foreach ( $items as $item => $label ) {
-			$selected = ( @$opt['units'] == $item ) ? 'selected="selected"' : '';
+			$selected = ( ( $opt['units'] ?? '' ) == $item ) ? 'selected="selected"' : '';
 			echo '<option value="' . $item .'" ' . $selected . '>' . $label . '</option>';
 		}
 		echo '</select>';
@@ -194,7 +194,7 @@ class Agm_AdminFormRenderer {
 		);
 		echo '<select id="image_size" name="agm_google_maps[image_size]">';
 		foreach ( $items as $item => $lbl ) {
-			$selected = ( @$opt['image_size'] == $item ) ? 'selected="selected"' : '';
+			$selected = ( ( $opt['image_size'] ?? '' ) == $item ) ? 'selected="selected"' : '';
 			echo '<option value="' . $item .'" ' . $selected . '>' . $lbl . '</option>';
 		}
 		echo '</select>';
@@ -202,7 +202,7 @@ class Agm_AdminFormRenderer {
 
 	public function create_alignment_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		$pos = @$opt['map_alignment'];
+		$pos = $opt['map_alignment'] ?? '';
 		?>
 		<input type="radio"
 			id="map_alignment_left"
@@ -238,7 +238,7 @@ class Agm_AdminFormRenderer {
 
 	public function create_custom_css_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		$css = @$opt['additional_css'];
+		$css = $opt['additional_css'] ?? '';
 		$css = htmlspecialchars( $css );  // preserve the original formating
 		?>
 		<textarea name="agm_google_maps[additional_css]" class="widefat" rows="4" cols="32"><?php
@@ -363,7 +363,7 @@ class Agm_AdminFormRenderer {
 
 	public function create_use_custom_fields_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		$use = @$opt['use_custom_fields'];
+		$use = $opt['use_custom_fields'] ?? false;
 
 		?>
 		<label for="agm_use_custom_fields-yes">
@@ -388,9 +388,9 @@ class Agm_AdminFormRenderer {
 
 	public function create_custom_fields_map_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		$lat_field = @$opt['custom_fields_map']['latitude_field'];
-		$lon_field = @$opt['custom_fields_map']['longitude_field'];
-		$add_field = @$opt['custom_fields_map']['address_field'];
+		$lat_field = $opt['custom_fields_map']['latitude_field'] ?? '';
+		$lon_field = $opt['custom_fields_map']['longitude_field'] ?? '';
+		$add_field = $opt['custom_fields_map']['address_field'] ?? '';
 
 		echo '<div><b>' . __( 'Meine Beiträge haben Breiten- und Längengrad-Felder', AGM_LANG ) . '</b></div>';
 		_e( 'Name des Breitenfelds:', AGM_LANG );
@@ -403,7 +403,7 @@ class Agm_AdminFormRenderer {
 		_e( 'Name des Adressfelds:', AGM_LANG );
 		echo ' <input type="text" name="agm_google_maps[custom_fields_map][address_field]" size="24" value="' . esc_attr( $add_field ) . '" />';
 
-		$discard = @$opt['custom_fields_map']['discard_old'] ? 'checked="checked"' : '';
+		$discard = ! empty( $opt['custom_fields_map']['discard_old'] ) ? 'checked="checked"' : '';
 		echo '<br />';
 		echo '<input type="hidden" name="agm_google_maps[custom_fields_map][discard_old]" value="" />';
 		echo '<input type="checkbox" id="agm-custom_fields-discard_old" name="agm_google_maps[custom_fields_map][discard_old]" value="1" ' . $discard . ' />';
@@ -413,12 +413,12 @@ class Agm_AdminFormRenderer {
 
 	public function create_custom_fields_options_box() {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		$opt = @$opt['custom_fields_options'];
+		$opt = $opt['custom_fields_options'] ?? array();
 		echo '<div><small>' . __( '(Eine neue Karte wird automatisch erstellt, unter Verwendung der oben angegebenen Standardwerte)', AGM_LANG ) . '</small></div>';
 		_e( 'Ordne die neue Karte dem Beitrag zu:', AGM_LANG );
-		echo ' ' . $this->_create_cfyn_box( 'associate_map', @$opt['associate_map'] ) . '<br />';
+		echo ' ' . $this->_create_cfyn_box( 'associate_map', $opt['associate_map'] ?? '' ) . '<br />';
 		_e( 'Karte automatisch anzeigen:', AGM_LANG );
-		echo ' ' . $this->_create_cfyn_box( 'autoshow_map', @$opt['autoshow_map'] ) . '<br />';
+		echo ' ' . $this->_create_cfyn_box( 'autoshow_map', $opt['autoshow_map'] ?? '' ) . '<br />';
 
 		$positions = array(
 			'top' => 'Above',
@@ -426,7 +426,7 @@ class Agm_AdminFormRenderer {
 		);
 		$select = '<select name="agm_google_maps[custom_fields_options][map_position]">';
 		foreach ( $positions as $key => $lbl ) {
-			$select .= "<option value='{$key}' " . (( $key == @$opt['map_position'] ) ? 'selected="selected"' : '' ) . '>' . __( $lbl, AGM_LANG ) . '</option>';
+			$select .= "<option value='{$key}' " . (( $key == ( $opt['map_position'] ?? '' ) ) ? 'selected="selected"' : '' ) . '>' . __( $lbl, AGM_LANG ) . '</option>';
 		}
 		$select .= '</select>';
 
@@ -543,8 +543,8 @@ class Agm_AdminFormRenderer {
 		foreach ( $items as $data ) {
 			$row_class = $data['active'] ? 'active' : 'inactive';
 			$can_use = true;
-			if ( ! $has_buddypress && 'BuddyPress' == @$data['requires'] ) { $can_use = false; }
-			if ( ! $has_kml && 'KML Overlay' == @$data['requires'] ) { $can_use = false; }
+if ( ! $has_buddypress && 'BuddyPress' == ( $data['requires'] ?? '' ) ) { $can_use = false; }
+				if ( ! $has_kml && 'KML Overlay' == ( $data['requires'] ?? '' ) ) { $can_use = false; }
 
 			?>
 			<tr class="agm-add-on <?php echo esc_attr( $row_class ); ?>">
@@ -569,7 +569,7 @@ class Agm_AdminFormRenderer {
 					</a>
 				<?php endif; ?>
 			<?php endif; ?>
-			<?php if ( ! $can_use && strlen( @$data['requires'] ) ) : ?>
+			<?php if ( ! $can_use && strlen( $data['requires'] ?? '' ) ) : ?>
 				<div>
 					<?php _e( 'Benötigt ', AGM_LANG ); ?>
 					<?php echo esc_html( $data['requires'] ); ?>

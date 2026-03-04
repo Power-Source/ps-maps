@@ -182,11 +182,11 @@ class AgmMarkerReplacer {
 			$overrides['map_type'] = strtoupper( $atts['map_type'] );
 		}
 
-		if ( @$atts['show_map'] ) { $overrides['show_map'] = (int) agm_positive_values( $atts['show_map'] ); }
-		if ( @$atts['show_markers'] ) { $overrides['show_markers'] = (int) agm_positive_values( $atts['show_markers'] ); }
-		if ( @$atts['show_images'] ) { $overrides['show_images'] = (int) agm_positive_values( $atts['show_images'] ); }
-		if ( @$atts['show_posts'] ) { $overrides['show_posts'] = (int) agm_positive_values( $atts['show_posts'] ); }
-		if ( @$atts['plot_routes'] ) { $overrides['plot_routes'] = (int) agm_positive_values( $atts['plot_routes'] ); }
+		if ( ! empty( $atts['show_map'] ) ) { $overrides['show_map'] = (int) agm_positive_values( $atts['show_map'] ); }
+		if ( ! empty( $atts['show_markers'] ) ) { $overrides['show_markers'] = (int) agm_positive_values( $atts['show_markers'] ); }
+		if ( ! empty( $atts['show_images'] ) ) { $overrides['show_images'] = (int) agm_positive_values( $atts['show_images'] ); }
+		if ( ! empty( $atts['show_posts'] ) ) { $overrides['show_posts'] = (int) agm_positive_values( $atts['show_posts'] ); }
+		if ( ! empty( $atts['plot_routes'] ) ) { $overrides['plot_routes'] = (int) agm_positive_values( $atts['plot_routes'] ); }
 
 		return apply_filters( 'agm-shortcode-overrides', $overrides, $atts );
 	}

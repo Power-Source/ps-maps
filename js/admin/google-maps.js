@@ -147,7 +147,7 @@ jQuery(function( ) {
 					} else {
 						status_done.show();
 						jQuery('#agm_mh_map_id').val(parseInt(data.id));
-						jQuery('#agm_insert_map').attr('disabled', false);
+					jQuery('#agm_insert_map').prop('disabled', false);
 
 						jQuery( document ).trigger(
 							'agm-map-saved',
@@ -428,7 +428,7 @@ jQuery(function( ) {
 			jQuery( '#agm_mh_map_id' ).val( data.id );
 
 			if ( ! data.id ) {
-				jQuery( '#agm_insert_map' ).attr( 'disabled', true );
+				jQuery( '#agm_insert_map' ).prop( 'disabled', true );
 			}
 
 			jQuery( '#agm_map_title' ).val( data.title );
@@ -526,8 +526,8 @@ jQuery(function( ) {
 				height = (parseInt( data.height ) > 0) ? data.height : height;
 			}
 
-			jQuery( '#agm_map_size_x' ).val( width ).attr( 'disabled', use_default );
-			jQuery( '#agm_map_size_y' ).val( height ).attr( 'disabled', use_default );
+			jQuery( '#agm_map_size_x' ).val( width ).prop( 'disabled', use_default );
+			jQuery( '#agm_map_size_y' ).val( height ).prop( 'disabled', use_default );
 		}
 
 		/**
@@ -536,8 +536,8 @@ jQuery(function( ) {
 		function toggleShowImages() {
 			var show_images = jQuery( '#agm_map_show_images' ).is( ':checked' );
 
-			jQuery( '#agm_map_image_size' ).attr( 'disabled', ! show_images );
-			jQuery( '#agm_map_image_limit' ).attr( 'disabled', ! show_images );
+			jQuery( '#agm_map_image_size' ).prop( 'disabled', ! show_images );
+			jQuery( '#agm_map_image_limit' ).prop( 'disabled', ! show_images );
 		}
 
 		/**

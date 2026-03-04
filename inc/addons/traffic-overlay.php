@@ -53,6 +53,8 @@ class Agm_Traffic_AdminPages {
 	 * @since 1.0
 	 */
 	public function load_scripts() {
+		global $hook_suffix;
+		
 		$data = array(
 			'lang' => array(
 				'show_traffic' => __( 'Verkehr anzeigen', AGM_LANG ),
@@ -60,7 +62,7 @@ class Agm_Traffic_AdminPages {
 		);
 
 		lib3()->ui->data( '_agmTraffic', $data );
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/traffic.min.js' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/traffic.min.js', $hook_suffix );
 	}
 
 	/**

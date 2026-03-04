@@ -40,7 +40,8 @@ class Agm_Kml_UploaderAdminPages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/kml-uploads.min.js' );
+		global $hook_suffix;
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/kml-uploads.min.js', $hook_suffix );
 	}
 
 	public function json_list_kml_uploads() {

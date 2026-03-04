@@ -90,7 +90,7 @@ class Agm_GwpAdminPages {
 		}
 
 		// Enqueue dependencies
-		global $post, $pagenow;
+		global $post, $pagenow, $hook_suffix;
 		if ( ! in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
 			return false; // Editor pages, double-check
 		}
@@ -98,7 +98,7 @@ class Agm_GwpAdminPages {
 			return false; // Invalid post type
 		}
 
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/geotag-wp.min.js' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/geotag-wp.min.js', $hook_suffix );
 	}
 
 	public function render_metabox() {

@@ -1521,7 +1521,8 @@ class Agm_UCI_AdminPages extends Agm_UCI_Shared {
 	 * @since  1.0.0
 	 */
 	public function enqueue_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/user-check-in.min.js' );
+		global $hook_suffix;
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/user-check-in.min.js', $hook_suffix );
 	}
 
 	/**

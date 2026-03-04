@@ -252,10 +252,11 @@ class AgmAdminMaps {
 	 * @since  2.9
 	 */
 	public function load_scripts( $screen ) {
-		if ( 'post' == @$screen->base || 'widgets' == @$screen->base ) {
+		$base = isset( $screen->base ) ? $screen->base : '';
+		if ( 'post' === $base || 'widgets' === $base ) {
 			lib3()->ui->add( TheLib_Ui::MODULE_CORE );
 			lib3()->ui->add( TheLib_Ui::MODULE_SELECT );
-		} elseif ( 'settings_page_agm_google_maps' == $screen->base ) {
+		} elseif ( 'settings_page_agm_google_maps' === $base ) {
 			lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.min.css' );
 		}
 	}
@@ -264,6 +265,8 @@ class AgmAdminMaps {
 	 * Hook Scripts to post editor.
 	 */
 	private function shared_scripts() {
+		global $hook_suffix;
+		
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
 		$defaults = array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -282,14 +285,17 @@ class AgmAdminMaps {
 		lib3()->ui->data( '_agm', $vars );
 		lib3()->ui->data( '_agm_root_url', AGM_PLUGIN_URL );
 
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/loader.js' );
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/google-maps.js' );
+		// Load scripts only on specific admin pages (post editor, widgets)
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/loader.js', $hook_suffix );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/google-maps.js', $hook_suffix );
 	}
 
 	/**
 	 * Adds an editor button to WordPress editor and handle Editor interface.
 	 */
 	public function js_editor_button() {
+		global $hook_suffix;
+		
 		$agm_map = 'agm_map' == AgmMapModel::get_config( 'shortcode_map' );
 
 		lib3()->ui->data(
@@ -330,10 +336,13 @@ class AgmAdminMaps {
 		);
 
 		$this->shared_scripts();
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/editor.js' );
+		// Load editor script only on post editor pages
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/editor.js', $hook_suffix );
 	}
 
 	public function js_widget_editor() {
+		global $hook_suffix;
+		
 		lib3()->ui->data(
 			'l10nEditor',
 			array(
@@ -343,7 +352,8 @@ class AgmAdminMaps {
 		);
 
 		$this->shared_scripts();
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/widget-editor.js' );
+		// Load widget editor script only on widgets page
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/widget-editor.js', $hook_suffix );
 	}
 
 	/**
@@ -402,7 +412,9 @@ class AgmAdminMaps {
 	 * Includes required styles.
 	 */
 	public function css_load_styles() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.min.css' );
+		global $hook_suffix;
+		// Load admin styles only on post editor and widgets pages
+		lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.min.css', $hook_suffix );
 	}
 
 	/**
@@ -728,7 +740,7 @@ class AgmAdminMaps {
 
 		// Register post saving handlers
 		$opts = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
-		if ( @$opts['use_custom_fields'] ) {
+		if ( ! empty( $opts['use_custom_fields'] ) ) {
 			add_action( 'post_updated', array( $this, 'process_post_meta' ), 1 ); // Note the order
 		}
 
