@@ -60,13 +60,11 @@ class AgmGdpr {
 		$privacy_page_id = (int) get_option( 'wp_page_for_privacy_policy' );
 		
 		if ( ! $privacy_page_id ) {
-			error_log( 'PS Maps GDPR: Keine Privacy Policy Seite konfiguriert' );
 			return;
 		}
 		
 		$page = get_post( $privacy_page_id );
 		if ( ! $page || 'publish' !== $page->post_status ) {
-			error_log( 'PS Maps GDPR: Privacy Policy Seite nicht veröffentlicht' );
 			return;
 		}
 		
@@ -78,16 +76,10 @@ class AgmGdpr {
 		$privacy_content = '<div id="agm-privacy-copy" class="wp-policy-content">' . $this->get_policy_content() . '</div>';
 		
 		// Aktualisiere die Seite mit dem neuen Inhalt
-		$update_result = wp_update_post( array(
+		wp_update_post( array(
 			'ID' => $privacy_page_id,
 			'post_content' => $page->post_content . "\n\n" . $privacy_content,
 		), true );
-		
-		if ( is_wp_error( $update_result ) ) {
-			error_log( 'PS Maps GDPR: Fehler beim Aktualisieren: ' . $update_result->get_error_message() );
-		} else {
-			error_log( 'PS Maps GDPR: Privacy Policy Seite erfolgreich aktualisiert (ID: ' . $privacy_page_id . ')' );
-		}
 	}
 
 	/**

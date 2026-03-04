@@ -30,7 +30,7 @@ jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, da
 		if ( ! parent.length ) { return false; }
 
 		var pc = parent.clone();
-		pc.find(".agm_mh_container,.agm_panoramio_container").remove();
+		pc.find(".agm_mh_container").remove();
 
 		var div = jQuery("<div />").append(pc);
 		jQuery.post(
