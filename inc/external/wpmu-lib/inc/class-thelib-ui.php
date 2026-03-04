@@ -28,8 +28,11 @@ class TheLib_Ui extends TheLib {
 	// Fontawesome CSS icons.
 	const MODULE_ICONS = 'fontawesome';
 
-	// jQuery datepicker, draggable, jQuery-UI styles.
-	const MODULE_JQUERY = 'jquery-ui';
+	// Vanilla JS modal draggable handler (replaces jQuery UI).
+	const MODULE_MODAL_DRAGGABLE = 'modal-draggable';
+
+	// Deprecated: jQuery UI is no longer used. Use modal-draggable instead.
+	const MODULE_JQUERY = 'modal-draggable';
 
 	/**
 	 * Class constructor
@@ -58,6 +61,7 @@ class TheLib_Ui extends TheLib {
 	 *  - html-element
 	 *  - media
 	 *  - fontawesome
+	 *  - modal-draggable
 	 *  - jquery-ui
 	 *
 	 * All undefined modules are assumed to be a valid CSS or JS file-name.
@@ -73,6 +77,9 @@ class TheLib_Ui extends TheLib {
 			case 'core':
 				$this->css( $this->_css_url( 'wpmu-ui.3.css' ), $onpage );
 				$this->js( $this->_js_url( 'wpmu-ui.3.js' ), $onpage );
+				// Load modal draggable handler for popup windows.
+				$this->js( $this->_js_url( 'modal-draggable.min.js' ), $onpage );
+				$this->css( $this->_css_url( 'modal-draggable.css' ), $onpage );
 				break;
 
 			case 'animate':
@@ -105,12 +112,18 @@ class TheLib_Ui extends TheLib {
 				$this->css( $this->_css_url( 'fontawesome.3.css' ), $onpage );
 				break;
 
+			case 'modal-draggable':
+				// Vanilla JS modal drag handler (replaces jQuery UI draggable)
+				$this->js( $this->_js_url( 'modal-draggable.min.js' ), $onpage );
+				$this->css( $this->_css_url( 'modal-draggable.css' ), $onpage );
+				break;
+
 			case 'jquery-ui':
 			case 'jquery':
-				$this->js( 'jquery-ui-core', $onpage );
-				$this->js( 'jquery-ui-datepicker', $onpage );
-				$this->js( 'jquery-ui-draggable', $onpage );
-				$this->css( $this->_css_url( 'jquery-ui.wpmui.3.css' ), $onpage );
+				// jQuery UI is deprecated in favor of modal-draggable
+				// For backward compatibility, load new modal-draggable instead
+				$this->js( $this->_js_url( 'modal-draggable.min.js' ), $onpage );
+				$this->css( $this->_css_url( 'modal-draggable.css' ), $onpage );
 				break;
 
 			default:

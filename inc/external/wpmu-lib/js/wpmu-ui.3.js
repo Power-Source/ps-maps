@@ -1655,11 +1655,11 @@
 				_popup.on( 'click', 'tbody .check-column :checkbox', _check_checkboxes );
 				jQuery( window ).on( 'resize', _resize_and_move );
 
-				if ( jQuery().draggable !== undefined ) {
-					_popup.draggable({
-						containment: jQuery( 'body' ),
-						scroll: false,
-						handle: '.popup-title'
+				// Use vanilla JS drag implementation instead of jQuery UI
+				if ( window.ModalDraggable !== undefined ) {
+					new ModalDraggable( _popup[0], {
+						handle: '.popup-title',
+						containment: 'body'
 					});
 				}
 			}

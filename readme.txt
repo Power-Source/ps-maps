@@ -45,6 +45,12 @@ Füge jeder Karte mehrere Markierungen hinzu!
 
 == ChangeLog ==
 
+= 1.0.1 =
+
+* Security hardening: SQL query handling and AJAX checks improved
+* Performance improvements: reduced expensive query patterns
+* Replaced jQuery UI draggable dependency with lightweight vanilla modal drag handler
+
 = 1.0.0 =
 
 * Release
