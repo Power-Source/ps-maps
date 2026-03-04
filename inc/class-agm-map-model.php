@@ -354,32 +354,53 @@ class AgmMapModel {
 			return false;
 		}
 
-		$sql = array();
+		// Group posts by blog to minimize blog switches
+		$posts_by_blog = array();
 		foreach ( $posts as $post ) {
 			$blog_id = Agm_PostIndexer::get_post_blog_id( $post );
 			$post_id = Agm_PostIndexer::get_post_post_id( $post );
+			
+			if ( ! isset( $posts_by_blog[ $blog_id ] ) ) {
+				$posts_by_blog[ $blog_id ] = array();
+			}
+			$posts_by_blog[ $blog_id ][] = array( 'post_id' => $post_id, 'len' => strlen( $post_id ) );
+		}
+		
+		$maps = array();
+		foreach ( $posts_by_blog as $blog_id => $blog_posts ) {
 			switch_to_blog( $blog_id );
-			$len = strlen( $post_id );
-
 			$table = $this->get_table_name();
-			$sql[] = "
-				SELECT
-					*,
-					'{$blog_id}' as blog_id
-				FROM {$table}
-				WHERE {$table}.post_ids LIKE '%s:{$len}:\"{$post_id}\";%'
-			";
+			
+			// Build WHERE clause with prepared statements
+			$where_conditions = array();
+			foreach ( $blog_posts as $post ) {
+				$post_id = $post['post_id'];
+				$len = $post['len'];
+				$where_conditions[] = $wpdb->prepare(
+					"{$table}.post_ids LIKE %s",
+					'%s:' . $len . ':\"' . $post_id . '\";%'
+				);
+			}
+			
+			if ( ! empty( $where_conditions ) ) {
+				$where_clause = implode( ' OR ', $where_conditions );
+				$blog_maps = $wpdb->get_results( 
+					"SELECT * FROM {$table} WHERE {$where_clause}",
+					ARRAY_A 
+				);
+				
+				if ( is_array( $blog_maps ) ) {
+					foreach ( $blog_maps as $k => $v ) {
+						$v['blog_id'] = $blog_id;
+						$maps[] = $this->prepare_map( $v );
+					}
+				}
+			}
+			
 			restore_current_blog();
 		}
-		$sql = join( ' UNION ', $sql );
-		$maps = $wpdb->get_results( $sql, ARRAY_A );
 
-		if ( is_array( $maps ) ) {
-			foreach ( $maps as $k => $v ) {
-				$maps[$k] = $this->prepare_map( $v );
-			}
-		}
-		return $maps;
+		return ! empty( $maps ) ? $maps : false;
 	}
 
 	/**
@@ -440,33 +461,34 @@ class AgmMapModel {
 		$posts = array();
 		$blogs_to_posts = array();
 
+		// Sort IDs by blog_id to minimize blog switches
 		foreach ( $ids as $k => $v ) {
+			$bid = false;
 			if ( false !== strpos( $v, '|' ) ) {
-				list( $blog_id, $v ) = explode( '|', $v );
-				$blog_id = (int) $blog_id;
+				list( $bid, $v ) = explode( '|', $v );
+				$bid = absint( $bid );
 			}
 
-			if ( is_array( @$blogs_to_posts[$blog_id] ) ) {
-				$blogs_to_posts[$blog_id] = array_merge( $blogs_to_posts[$blog_id], array( $v ) );
+			if ( is_array( @$blogs_to_posts[$bid] ) ) {
+				$blogs_to_posts[$bid] = array_merge( $blogs_to_posts[$bid], array( absint( $v ) ) );
 			} else {
-				$blogs_to_posts[$blog_id] = array( $v );
+				$blogs_to_posts[$bid] = array( absint( $v ) );
 			}
 		}
 
-		foreach ( $blogs_to_posts as $blog_id => $ids ) {
+		foreach ( $blogs_to_posts as $blog_id => $post_ids ) {
 			if ( $blog_id ) {
 				switch_to_blog( $blog_id );
 			}
 
 			$table = $wpdb->prefix . 'posts';
-			$ids_string = join( ', ', $ids );
-			$sql = "
-			SELECT
-				id,
-				post_title
-			FROM {$table}
-			WHERE ID IN ( {$ids_string} )
-			";
+			
+			// Use prepared statement to prevent SQL injection
+			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+			$sql = $wpdb->prepare(
+				"SELECT id, post_title FROM {$table} WHERE ID IN ({$placeholders})",
+				$post_ids
+			);
 
 			$result = $wpdb->get_results( $sql, ARRAY_A );
 
@@ -737,9 +759,10 @@ class AgmMapModel {
 			return false;
 		}
 
-		$markers = unserialize( @$map['markers'] );
-		$options = unserialize( @$map['options'] );
-		$post_ids = unserialize( @$map['post_ids'] );
+		// Use safe unserialization to prevent object injection
+		$markers = $this->safe_unserialize( $map['markers'] );
+		$options = $this->safe_unserialize( $map['options'] );
+		$post_ids = $this->safe_unserialize( $map['post_ids'] );
 		$defaults = $this->get_map_defaults();
 
 		// Data is force-escaped by WP, so compensate for that
@@ -778,6 +801,27 @@ class AgmMapModel {
 		$result = apply_filters( 'agm-load-options', $result, $options );
 
 		return $result;
+	}
+
+	/**
+	 * Safely unserialize data without allowing object instantiation.
+	 *
+	 * @param mixed $data Serialized data
+	 * @return mixed Unserialized data or empty array on failure
+	 */
+	private function safe_unserialize( $data ) {
+		if ( empty( $data ) ) {
+			return array();
+		}
+		
+		// Use allowed_classes option to prevent object injection
+		$unserialized = @unserialize( $data, array( 'allowed_classes' => false ) );
+		
+		if ( $unserialized === false && $data !== 'b:0;' ) {
+			return array();
+		}
+		
+		return is_array( $unserialized ) ? $unserialized : array();
 	}
 
 	/**

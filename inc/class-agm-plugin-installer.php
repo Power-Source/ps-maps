@@ -76,7 +76,8 @@ class AgmPluginInstaller {
 
 		if ( null === $Res ) {
 			$table = $this->model->get_table_name();
-			$Res = $wpdb->get_var( "show tables like '{$table}'" ) == $table;
+			// Use prepared statement to prevent SQL injection
+			$Res = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table ) ) === $table;
 		}
 
 		return $Res;

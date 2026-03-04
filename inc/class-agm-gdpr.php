@@ -72,7 +72,6 @@ class AgmGdpr {
 		
 		// Prüfe, ob der Inhalt bereits vorhanden ist
 		if ( strpos( $page->post_content, 'agm-privacy-copy' ) !== false ) {
-			error_log( 'PS Maps GDPR: Inhalt bereits in Privacy Policy vorhanden' );
 			return;
 		}
 		
@@ -287,27 +286,30 @@ class AgmGdpr {
 	 * @return array
 	 */
 	public function get_autocreated_map_ids( $author_id ) {
+		global $wpdb;
+		
 		$map_ids = array();
 
-		$post_ids = get_posts(array(
-			'post_type' => 'any',
-			'post_status' => 'any',
-			'author' => $author_id,
-			'meta_key' => 'agm_map_created',
-			'meta_compare' => 'EXISTS',
-			'fields' => 'ids',
-			'limit' => 500,
-		));
-		if ( ! is_array( $post_ids ) ) {
-			return $map_ids;
-		}
+		// Optimize: Use direct query to avoid N+1 problem
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT DISTINCT CAST(pm.meta_value AS UNSIGNED) as map_id 
+				FROM {$wpdb->posts} p 
+				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+				WHERE p.post_author = %d 
+				AND pm.meta_key = 'agm_map_created' 
+				AND p.post_status != 'trash'
+				LIMIT 500",
+				absint( $author_id )
+			)
+		);
 
-		foreach ( $post_ids as $pid ) {
-			$map_id = (int) get_post_meta( (int) $pid, 'agm_map_created', true );
-			if ( empty( $map_id ) ) {
-				continue;
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $row ) {
+				if ( ! empty( $row->map_id ) ) {
+					$map_ids[] = (int) $row->map_id;
+				}
 			}
-			$map_ids[] = $map_id;
 		}
 
 		return $map_ids;

@@ -305,6 +305,6 @@ class AgmMarkerReplacer {
 	 * @since  2.8.6.1
 	 */
 	public function footer_content() {
-		echo '' . implode( '', self::$_footers );
+		echo wp_kses_post( implode( '', self::$_footers ) );
 	}
 };

@@ -538,6 +538,14 @@ class AgmAdminMaps {
 	 * Loads associated post titles.
 	 */
 	public function json_get_post_titles() {
+		// Verify nonce for security
+		check_ajax_referer( 'agm_google_maps', 'nonce' );
+		
+		// Check if user has permission (no nopriv access)
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
+		}
+		
 		$post_ids = isset( $_POST['post_ids'] ) ? array_map( 'absint', (array) $_POST['post_ids'] ) : array();
 		$titles = $this->model->get_post_titles( $post_ids );
 		$titles = apply_filters( 'agm_google_maps-json_post_titles', $titles );
@@ -741,7 +749,6 @@ class AgmAdminMaps {
 		add_action( 'wp_ajax_agm_delete_map', array( $this, 'json_delete_map' ) );
 		add_action( 'wp_ajax_agm_list_icons', array( $this, 'json_list_icons' ) );
 		add_action( 'wp_ajax_agm_get_post_titles', array( $this, 'json_get_post_titles' ) );
-		add_action( 'wp_ajax_nopriv_agm_get_post_titles', array( $this, 'json_get_post_titles' ) ); // Get post title if requested by user too
 		add_action( 'wp_ajax_agm_merge_maps', array( $this, 'json_merge_maps' ) );
 		add_action( 'wp_ajax_agm_batch_delete', array( $this, 'json_batch_delete' ) );
 

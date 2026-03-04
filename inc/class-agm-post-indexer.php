@@ -28,24 +28,37 @@ class Agm_PostIndexer {
 
 	public static function get_posts_by_tags_old_pi ($tags=array()) {
 		if (!is_array($tags)) return array();
-		foreach ($tags as $key=>$val) {
-			$tags[$key] = "'" . trim($val) . "'";
-		}
-		$tags = join(',', $tags);
-
+		
 		global $wpdb;
 		$tag_table = $wpdb->base_prefix . 'site_terms';
-		$sql = "SELECT term_id FROM {$tag_table} WHERE type='post_tag' AND slug IN ({$tags})";
+		
+		// Sanitize tag slugs to prevent SQL injection
+		$sanitized_tags = array();
+		foreach ($tags as $tag) {
+			$sanitized_tags[] = sanitize_title( $tag );
+		}
+		
+		if (empty($sanitized_tags)) return false;
+		
+		// Use prepared statements to prevent SQL injection
+		$placeholders = implode(',', array_fill(0, count($sanitized_tags), '%s'));
+		$sql = $wpdb->prepare(
+			"SELECT term_id FROM {$tag_table} WHERE type='post_tag' AND slug IN ({$placeholders})",
+			$sanitized_tags
+		);
 		$tag_ids = $wpdb->get_results($sql, ARRAY_A);
 		if (empty($tag_ids)) return false;
 
 		$post_table = $wpdb->base_prefix . 'site_posts';
 		$where = array();
 		foreach ($tag_ids as $tag) {
-			$where[] = "post_terms LIKE '%|" . $tag['term_id'] . "|%'";
+			$term_id = absint($tag['term_id']);
+			$where[] = $wpdb->prepare("post_terms LIKE %s", '%|' . $term_id . '|%');
 		}
-		$where = join (' OR ', $where);
-		$sql = "SELECT * FROM {$post_table} WHERE {$where} ORDER BY site_id, blog_id";
+		if (empty($where)) return false;
+		
+		$where_clause = '(' . implode(' OR ', $where) . ')';
+		$sql = "SELECT * FROM {$post_table} WHERE {$where_clause} ORDER BY site_id, blog_id";
 		return $wpdb->get_results($sql, ARRAY_A);
 	}
 
