@@ -3,7 +3,7 @@
  * Plugin Name: PS Maps
  * Plugin URI:  https://power-source.github.io/ps-maps/
  * Description: Google Maps lässt sich ganz einfach und Datenschutzsicher in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Text Domain: agm_google_maps
  * Domain Path: languages
  * Author:      PSOURCE
