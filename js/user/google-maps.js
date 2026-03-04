@@ -30,12 +30,10 @@ window.AgmMapHandler = function (selector, data) {
 	var map;
 	var directionsDisplay;
 	var directionsService;
-	var panoramioImages;
 	var travelType;
 	var mapId = 'map_' + Math.floor(Math.random()* new Date().getTime()) + '_preview';
 	var container = jQuery(selector);
 	var alignmentContainer;
-	var _panoramioLayer = false;
 	var _markers = []; // Detail information on each marker
 	var _list_changed = false;
 	var _sort_function = null;
@@ -75,16 +73,6 @@ window.AgmMapHandler = function (selector, data) {
 		;
 		html += '</div>';
 		container.append(html);
-	};
-
-	var togglePanoramioLayer = function () {
-		if (typeof window.google.maps.panoramio !== 'object') { return false; }
-		if (data.show_panoramio_overlay && parseInt(data.show_panoramio_overlay, 10)) {
-			var tag = data.panoramio_overlay_tag;
-			_panoramioLayer = new window.google.maps.panoramio.PanoramioLayer();
-			if (tag) { _panoramioLayer.setTag(tag); }
-			_panoramioLayer.setMap(map);
-		}
 	};
 
 	var switchTravelType = function () {
@@ -588,9 +576,6 @@ window.AgmMapHandler = function (selector, data) {
 		data.image_size = data.image_size || data.defaults.image_size;
 		data.image_limit = data.image_limit || data.defaults.image_limit;
 
-		data.show_panoramio_overlay = ("show_panoramio_overlay" in data) ? data.show_panoramio_overlay : 0;
-		data.panoramio_overlay_tag = ("panoramio_overlay_tag" in data) ? data.panoramio_overlay_tag : '';
-
 		data.street_view = ("street_view" in data) ? data.street_view : 0;
 
 		container.wrap('<div id="map_' + mapId + '_alignment_container"></div>');
@@ -637,7 +622,6 @@ window.AgmMapHandler = function (selector, data) {
 		);
 
 		addMarkers();
-		togglePanoramioLayer();
 		window.setTimeout( function() { populateLinksToPostsMarkup(); }, 20 );
 
 		if ( parseInt(data.street_view, 10) ) {
@@ -659,11 +643,6 @@ window.AgmMapHandler = function (selector, data) {
 				});
 			}
 			panorama.setVisible(true);
-		}
-
-		if ( data.show_images && parseInt( data.show_images, 10 ) ) {
-			panoramioImages = new AgmPanoramioHandler(map, container, data.image_limit, data.image_size);
-			container.append(panoramioImages.createMarkup());
 		}
 
 		var plot_routes = false;
@@ -729,126 +708,6 @@ window.AgmMapHandler = function (selector, data) {
 
 	init();
 
-};
-
-/**
- * Local Panoramio handler.
- * If not enabled per map, Panoramio images won't be loaded and this
- * won't be executed.
- * Since it's optional, the handler is not global.
- */
-var AgmPanoramioHandler = function (map, container, limit, size) {
-	var containerId = 'agm_panoramio_' + Math.floor(Math.random() * new Date().getTime()) + '_container';
-	var images = [];
-	var height = 200;
-
-	var loadPanoramioScript = function () {
-		var bounds = map.getBounds();
-		if ( ! bounds ) {
-			return window.setTimeout(loadPanoramioScript, 100);
-		}
-
-		var callback = 'func_' + containerId + '_image_handler';
-		window[callback] = function (data) {
-			images = data.photos;
-		};
-
-		var script = document.createElement("script");
-		var src = 'http://www.panoramio.com/map/get_panoramas.php?set=full&from=0&to=' + limit +
-			'&miny=' + bounds.getSouthWest().lat() + '&minx=' + bounds.getSouthWest().lng() +
-			'&maxy=' + bounds.getNorthEast().lat() + '&maxx=' + bounds.getNorthEast().lng() +
-			'&size=' + size +
-			'&callback=' + callback;
-
-		script.type = "text/javascript";
-		script.src = src;
-		document.body.appendChild(script);
-	};
-
-	var loadGalleriaScript = function () {
-		if ( window.Galleria && typeof( window.Galleria ) === 'function' ) { return true; }
-
-		var script = document.createElement("script");
-		var src = _agm.root_url + '/js/external/galleria/galleria-1.2.2.min.js';
-		script.type = "text/javascript";
-		script.src = src;
-		document.body.appendChild(script);
-	};
-
-	var loadGalleriaTheme = function () {
-		if ( ! window.Galleria || typeof( window.Galleria ) !== 'function' ) {
-			window.setTimeout(loadGalleriaTheme, 300);
-		} else {
-			if ( window.Galleria && window.Galleria.theme ) { return true; }
-
-			var script = document.createElement("script");
-			var src = _agm.root_url + '/js/external/galleria/themes/classic/galleria.classic.min.js';
-			script.type = "text/javascript";
-			script.src = src;
-			document.body.appendChild(script);
-			waitForGalleriaTheme();
-		}
-	};
-
-	var waitForImages = function () {
-		if ( ! images.length ) {
-			window.setTimeout( waitForImages, 1000 );
-		} else {
-			loadGalleriaTheme();
-		}
-	};
-
-	var waitForGalleriaTheme = function () {
-		if ( ! window.Galleria ||
-			! window.Galleria.theme ||
-			typeof( window.Galleria ) !== 'function' ||
-			typeof( jQuery('#' + containerId + ' div.agm_panoramio_image_list_container' ).galleria) !== 'function'
-		) {
-			window.setTimeout(waitForGalleriaTheme, 300);
-		} else {
-			populateContainer();
-			var gheight = height ? height : 200;
-			jQuery('#' + containerId + ' div.agm_panoramio_image_list_container').galleria({
-				width: container.width(),
-				height: gheight
-			});
-		}
-	};
-
-	var createMarkup = function () {
-		return '<div class="agm_panoramio_container" id="' + containerId + '">' +
-		'</div>';
-	};
-
-	var populateContainer = function () {
-		if ( ! jQuery('#' + containerId).length ) { return false; }
-
-		var html = '<div class="agm_panoramio_image_list_container"><ul class="agm_panoramio_image_list">';
-		var totalImageWidth = 0;
-
-		jQuery.each(images, function(idx, img) {
-			var imgh = parseInt(img.height, 10);
-			height = (imgh > height) ? imgh : height;
-			html += '<li>' +
-				'<img src="' + img.photo_file_url + '" title="' + img.photo_title + '" />' +
-			'</li>';
-			totalImageWidth += img.width;
-		});
-		html += '</ul></div>';
-		jQuery('#'+containerId).html(html);
-	};
-
-	var init = function () {
-		loadPanoramioScript();
-		loadGalleriaScript();
-		waitForImages();
-	};
-
-	init();
-
-	return {
-		"createMarkup": createMarkup
-	};
 };
 
 /**

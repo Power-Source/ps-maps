@@ -676,15 +676,18 @@ jQuery(function() {
 
 	// --- Create Elements ---
 
-	_mbuttons.append(
-		'<a title="' + l10nEditor.google_maps + '" class="button add_map" href="#">' +
-			'<img alt="' + l10nEditor.google_maps + '" src="' + _agm.root_url + '/img/system/globe-button.gif">' +
-		'</a>'
-	);
+	if ( ! _mbuttons.find( '.add_map.agm-editor-button' ).length ) {
+		_mbuttons.append(
+			'<a title="' + l10nEditor.google_maps + '" class="button add_map agm-editor-button" href="#">' +
+				'<img alt="' + l10nEditor.google_maps + '" src="' + _agm.root_url + '/img/system/globe-button.gif">' +
+			'</a>'
+		);
+	}
 
 	// Create the needed editor container HTML
-	jQuery( 'body' ).append(
-		'<div id="map_container_src" style="display:none"><div id="map_container">' +
+	if ( ! jQuery( '#map_container_src' ).length ) {
+		jQuery( 'body' ).append(
+			'<div id="map_container_src" style="display:none"><div id="map_container">' +
 			( _agm.is_multisite ?
 				'' :
 				'<p class="agm_less_important">' +
@@ -733,38 +736,54 @@ jQuery(function() {
 					'</button>' +
 				'</span>' +
 			'</div>' +
-		'</div></div>'
-	);
+			'</div></div>'
+		);
+	}
 
 
 	// --- Bind events: Page Editor ---
 
 	// Show the Map-Editor when user clicks the Map-Button.
-	jQuery( document ).on( 'click', '.add_map', open_map_editor );
+	jQuery( document )
+		.off( 'click.agmEditor', '.add_map' )
+		.on( 'click.agmEditor', '.add_map', open_map_editor );
 
 
 	// --- Bind events: Map Editor Popup ---
 
 	// Show the add-new form when user clicks the button.
-	jQuery( document ).on( 'click', '.agm-editor .maps_new_switch', show_create_map );
+	jQuery( document )
+		.off( 'click.agmEditor', '.agm-editor .maps_new_switch' )
+		.on( 'click.agmEditor', '.agm-editor .maps_new_switch', show_create_map );
 
 	// Show map-list when map popup is opened.
-	jQuery( document ).on( 'agm_map_editor_open', show_existing_maps );
+	jQuery( document )
+		.off( 'agm_map_editor_open.agmEditor' )
+		.on( 'agm_map_editor_open.agmEditor', show_existing_maps );
 
 	// Show map-list when map is closed (button 'Go Back').
-	jQuery( document ).on( 'agm_map_close', '.agm-editor .map_preview_container', show_existing_maps );
+	jQuery( document )
+		.off( 'agm_map_close.agmEditor', '.agm-editor .map_preview_container' )
+		.on( 'agm_map_close.agmEditor', '.agm-editor .map_preview_container', show_existing_maps );
 
 	// On map addition, update editor.
 	jQuery( document )
-		.on( 'click', 'li.existing_map_item .add_map_item', insertMapItem)
-		.on( 'click', 'li.existing_map_item .edit_map_item', updateMapPreview)
-		.on( 'click', 'li.existing_map_item .delete_map_item', confirm_delete_map);
+		.off( 'click.agmEditor', 'li.existing_map_item .add_map_item' )
+		.off( 'click.agmEditor', 'li.existing_map_item .edit_map_item' )
+		.off( 'click.agmEditor', 'li.existing_map_item .delete_map_item' )
+		.on( 'click.agmEditor', 'li.existing_map_item .add_map_item', insertMapItem)
+		.on( 'click.agmEditor', 'li.existing_map_item .edit_map_item', updateMapPreview)
+		.on( 'click.agmEditor', 'li.existing_map_item .delete_map_item', confirm_delete_map);
 
 	// Bind map editor insert event to map insert
-	jQuery( document ).on( 'agm_map_insert', '.agm-editor .map_preview_container', insert_shortcode );
+	jQuery( document )
+		.off( 'agm_map_insert.agmEditor', '.agm-editor .map_preview_container' )
+		.on( 'agm_map_insert.agmEditor', '.agm-editor .map_preview_container', insert_shortcode );
 
 	// Bind advanced mode switching
-	jQuery( document ).on( 'click', '.agm-editor .maps_advanced_switch', toggle_advanced_mode );
+	jQuery( document )
+		.off( 'click.agmEditor', '.agm-editor .maps_advanced_switch' )
+		.on( 'click.agmEditor', '.agm-editor .maps_advanced_switch', toggle_advanced_mode );
 
 	// Highlight the active existing map item
 	jQuery( 'body' )

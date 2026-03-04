@@ -32,8 +32,7 @@ jQuery(function( ) {
 			map,
 			originalData,
 			container = jQuery( selector ),
-			_markers = [],
-			_panoramioLayer = false;
+			_markers = [];
 
 		// Allow map insertion by default
 		allowInsertion = (allowInsertion !== undefined ? allowInsertion : true);
@@ -53,9 +52,6 @@ jQuery(function( ) {
 			data.show_images = ("show_images" in data) ? data.show_images : 0;
 
 			data.snapping = ("snapping" in data.defaults) ? parseInt(data.defaults.snapping) : 1;
-
-			data.show_panoramio_overlay = ("show_panoramio_overlay" in data) ? parseInt(data.show_panoramio_overlay) : 0;
-			data.panoramio_overlay_tag = ("panoramio_overlay_tag" in data) ? data.panoramio_overlay_tag : '';
 
 			data.street_view = ("street_view" in data) ? data.street_view : 0;
 			data.street_view_pos = ("street_view_pos" in data) ? data.street_view_pos : 0;
@@ -113,8 +109,6 @@ jQuery(function( ) {
 				"show_images": jQuery('#agm_map_show_images').is(':checked') ? 1 : 0,
 				"image_size": jQuery('#agm_map_image_size').val(),
 				"image_limit": jQuery('#agm_map_image_limit').val(),
-				"show_panoramio_overlay": jQuery('#agm_map_show_panoramio_overlay').is(':checked') ? 1 : 0,
-				"panoramio_overlay_tag": jQuery('#agm_map_panoramio_overlay_tag').val(),
 				"street_view": streetView.getVisible() ? 1 : 0,
 				"street_view_pos": streetView.getVisible() ? [streetView.getPosition().lat(), streetView.getPosition().lng()] : 0,
 				"street_view_pov": streetView.getVisible() ? streetView.getPov() : 0,
@@ -369,25 +363,6 @@ jQuery(function( ) {
 				'</fieldset>' +
 
 				'<fieldset>' +
-					'<legend>' + l10nStrings.panoramio_overlay + '</legend>' +
-					'<div>' +
-						'<label>' +
-							'<input type="checkbox" id="agm_map_show_panoramio_overlay" /> ' +
-							l10nStrings.show_panoramio_overlay +
-						'</label>' +
-					'</div>' +
-					'<div>' +
-						'<label for="agm_map_panoramio_overlay_tag">' +
-							l10nStrings.panoramio_overlay_tag +
-						'</label> ' +
-						'<input type="text" size="12" id="agm_map_panoramio_overlay_tag" />' +
-					'</div>' +
-					'<div>' +
-						'<small>' + l10nStrings.panoramio_overlay_tag_help + '</small>' +
-					'</div>' +
-				'</fieldset>' +
-
-				'<fieldset>' +
 					'<legend>' + l10nStrings.map_alignment + '</legend>' +
 					'<div>' +
 						'<label>' +
@@ -466,8 +441,7 @@ jQuery(function( ) {
 			var show_map = (data.show_map && parseInt(data.show_map) > 0),
 				show_posts = (data.show_posts && parseInt(data.show_posts) > 0),
 				show_markers = (data.show_markers && parseInt(data.show_markers) > 0),
-				show_images = (data.show_images && parseInt(data.show_images) > 0),
-				show_panoramio_overlay = data.show_panoramio_overlay;
+				show_images = (data.show_images && parseInt(data.show_images) > 0);
 
 			jQuery( '#agm_map_show_map' ).prop( 'checked', show_map );
 			jQuery( '#agm_map_show_posts' ).prop( 'checked', show_posts );
@@ -478,15 +452,6 @@ jQuery(function( ) {
 				.prop( 'checked', show_images );
 
 			toggleShowImages();
-
-			// agm_map_show_panoramio_overlay
-			jQuery( '#agm_map_show_panoramio_overlay' )
-				.on( 'click', togglePanoramioLayer )
-				.prop( 'checked', show_panoramio_overlay );
-
-			jQuery( '#agm_map_panoramio_overlay_tag' )
-				.change( changePanoramio )
-				.val( data.panoramio_overlay_tag );
 
 			switch ( data.map_alignment ) {
 				case 'right':
@@ -515,25 +480,6 @@ jQuery(function( ) {
 
 			// Toggle post association/disassociation
 			jQuery( '#agm_map_size_associate' ).click( togglePostAssociate );
-		}
-
-		/**
-		 * Turns the Panoramio-Preview on or off
-		 */
-		function togglePanoramioLayer() {
-			if ( typeof window.google.maps.panoramio !== 'object' ) { return false; }
-
-			if ( jQuery( '#agm_map_show_panoramio_overlay' ).is( ':checked' ) ) {
-				var tag = jQuery( '#agm_map_panoramio_overlay_tag' ).val();
-
-				_panoramioLayer = new window.google.maps.panoramio.PanoramioLayer();
-				if ( tag ) { _panoramioLayer.setTag( tag ); }
-
-				_panoramioLayer.setMap( map );
-			} else if ( _panoramioLayer ) {
-				_panoramioLayer.setMap( null );
-				_panoramioLayer = false;
-			}
 		}
 
 		/**
@@ -620,16 +566,7 @@ jQuery(function( ) {
 			return true;
 		}
 
-		/**
-		 * OPTIONS: Change the value of the panoramio overlay tag
-		 */
-		function changePanoramio() {
-			var tag = jQuery( '#agm_map_panoramio_overlay_tag' ).val();
 
-			if ( ! _panoramioLayer ) { return true; }
-
-			_panoramioLayer.setTag( tag );
-		}
 
 		function addMarkers() {
 			if ( ! data.markers ) { return; }
@@ -889,7 +826,6 @@ jQuery(function( ) {
 			}
 
 			addMarkers();
-			togglePanoramioLayer();
 			loadAssociatedPosts();
 
 			if ( parseInt(data.street_view) ) {
