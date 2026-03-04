@@ -55,6 +55,9 @@ Füge jeder Karte mehrere Markierungen hinzu!
 * Code optimization: Minified admin JavaScript files reducing size by 35-45%
 * Admin UI performance: Scripts now load only on required pages (post editor, widgets) instead of all admin pages
 * Code quality: Enhanced null coalescing and array key checks for cleaner, more efficient code
+* Security: Added safe_unserialize() method to prevent object injection attacks
+* Bug fix: Fixed frontend script loading to ensure maps display correctly
+* Bug fix: Fixed script load order to prevent JavaScript errors on pages with map shortcodes
 
 = 1.0.0 =
 

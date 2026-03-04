@@ -11,6 +11,7 @@ if ( ! is_admin() ) { // Doesn't work on admin
 	class AgmDependencies {
 
 		private static $_include = false;
+		private static $_scripts_registered = false;
 
 		private function __construct() {}
 
@@ -20,6 +21,80 @@ if ( ! is_admin() ) { // Doesn't work on admin
 
 		private static function _add_hooks() {
 			add_action( 'wp_head', array( __CLASS__, 'js_init_maps' ) );
+			add_action( 'wp_head', array( __CLASS__, 'output_localization_data' ), 1 );
+			add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_scripts' ), 5 );
+		}
+		
+		/**
+		 * Output localization data early in wp_head, before scripts load.
+		 * This ensures _agm and l10nStrings are always available.
+		 */
+		public static function output_localization_data() {
+			$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
+			$defaults = array(
+				'ajax_url'     => admin_url( 'admin-ajax.php' ),
+				'root_url'     => AGM_PLUGIN_URL,
+				'is_multisite' => (int) is_multisite(),
+				'libraries'    => array(),
+				'maps_api_key' => !empty($opt['map_api_key']) ? $opt['map_api_key'] : '',
+			);
+			$vars = apply_filters(
+				'agm_google_maps-javascript-data_object',
+				apply_filters( 'agm_google_maps-javascript-data_object-user', $defaults )
+			);
+			
+			$l10n_strings = array(
+				'close' => __( 'Schließen', AGM_LANG ),
+				'get_directions' => __( 'Wegbeschreibung erhalten', AGM_LANG ),
+				'geocoding_error' => __( 'Beim Geokodieren Ihres Standorts ist ein Fehler aufgetreten. Überprüfen Sie die Adresse und versuchen Sie es erneut', AGM_LANG ),
+				'missing_waypoint' => __( 'Bitte geben Sie Werte für sowohl Punkt A als auch Punkt B ein', AGM_LANG ),
+				'directions' => __( 'Wegbeschreibung', AGM_LANG ),
+				'posts' => __( 'Beiträge', AGM_LANG ),
+				'showAll' => __( 'Alle anzeigen', AGM_LANG ),
+				'hide' => __( 'Verbergen', AGM_LANG ),
+				'oops_no_directions' => __( 'Hoppla, wir konnten die Wegbeschreibung nicht berechnen', AGM_LANG ),
+			);
+			
+			echo '<script type="text/javascript">';
+			echo 'var _agm = ' . json_encode( $vars ) . ';';
+			echo 'var l10nStrings = ' . json_encode( $l10n_strings ) . ';';
+			echo '</script>';
+		}
+		
+		/**
+		 * Register scripts early so they can be enqueued later if needed.
+		 */
+		public static function register_scripts() {
+			self::$_scripts_registered = true;
+			
+			// Register loader.js - load in header (false) so _agm is available for inline scripts
+			wp_register_script(
+				'agm-loader',
+				AGM_PLUGIN_URL . 'js/loader.js',
+				array(),
+				'2.9.4',
+				false
+			);
+			
+			// Register google-maps.js - load in header (false) so _agmMaps is available for inline scripts
+			wp_register_script(
+				'agm-google-maps-user',
+				AGM_PLUGIN_URL . 'js/user/google-maps.js',
+				array( 'jquery', 'agm-loader' ),
+				'2.9.4',
+				false
+			);
+			
+			// Note: Localization data (_agm and l10nStrings) is output separately in output_localization_data()
+			// to ensure it's always available, even if scripts are enqueued late
+			
+			// Register user styles
+			wp_register_style(
+				'agm-google-maps-user',
+				AGM_PLUGIN_URL . 'css/google_maps_user.min.css',
+				array(),
+				'2.9.4'
+			);
 		}
 
 		public static function ensure_presence() {
@@ -34,9 +109,20 @@ if ( ! is_admin() ) { // Doesn't work on admin
 				if ( $Present ) { return; }
 				$Present = true;
 
-				AgmDependencies::js_data_object();
-				AgmDependencies::css_load_styles();
-				AgmDependencies::js_google_maps_api();
+				// Enqueue registered scripts
+				if ( self::$_scripts_registered ) {
+					// Scripts and their data are already registered, just enqueue them
+					wp_enqueue_style( 'agm-google-maps-user' );
+					wp_enqueue_script( 'agm-loader' );
+					wp_enqueue_script( 'agm-google-maps-user' );
+				} else {
+					// Fallback: Load via lib3 UI if scripts haven't been registered yet
+					AgmDependencies::js_data_object();
+					AgmDependencies::css_load_styles();
+					AgmDependencies::js_google_maps_api();
+				}
+				
+				do_action( 'agm-user-scripts' );
 			}
 		}
 

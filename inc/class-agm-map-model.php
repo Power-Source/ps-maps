@@ -788,8 +788,25 @@ class AgmMapModel {
 			'street_view'            => $options['street_view'] ?? '',
 			'street_view_pos'        => $options['street_view_pos'] ?? '',
 			'street_view_pov'        => $options['street_view_pov'] ?? '',
-		)
-);
+			)
+		);
+
+		return apply_filters( 'agm-load-process_map', $result, $map );
+	}
+
+	/**
+	 * Safely unserialize data to prevent object injection attacks.
+	 *
+	 * @param mixed $data Serialized data
+	 * @return mixed Unserialized data or empty array on failure
+	 */
+	private function safe_unserialize( $data ) {
+		if ( empty( $data ) || ! is_string( $data ) ) {
+			return is_array( $data ) ? $data : array();
+		}
+
+		// Use unserialize with allowed classes restriction for PHP 7+
+		$unserialized = @unserialize( $data, array( 'allowed_classes' => false ) );
 		
 		if ( $unserialized === false && $data !== 'b:0;' ) {
 			return array();
