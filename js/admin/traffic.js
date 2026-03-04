@@ -42,8 +42,8 @@ jQuery(function init_addon() {
 	}
 
 	// Add options.
-	doc.bind( 'agm_google_maps-admin-options_initialized', init_options );
+	doc.on( 'agm_google_maps-admin-options_initialized', init_options );
 
 	// Save options.
-	doc.bind( 'agm_google_maps-admin-save_request', sanitize_options );
+	doc.on( 'agm_google_maps-admin-save_request', sanitize_options );
 });

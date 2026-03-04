@@ -8,7 +8,7 @@
 /*global navigator:false */
 
 // Add options
-jQuery(document).bind(
+jQuery(document).on(
 	'agm_google_maps-admin-options_initialized',
 	function( ev, options, data ) {
 		var has_scroll = false;
@@ -30,7 +30,7 @@ jQuery(document).bind(
 );
 
 // Save
-jQuery(document).bind(
+jQuery(document).on(
 	'agm_google_maps-admin-save_request',
 	function( ev, request ) {
 		request.disable_scroll = jQuery('#agm-disable_scroll').is(':checked');

@@ -78,7 +78,7 @@ jQuery(function () {
 		}
 	};
 
-	doc.bind( 'agm_google_maps-admin-map_initialized', init_map );
-	doc.bind( 'agm_google_maps-admin-markup_created', center_button );
-	doc.bind( 'agm_google_maps-admin-save_request', save_map );
+	doc.on( 'agm_google_maps-admin-map_initialized', init_map );
+	doc.on( 'agm_google_maps-admin-markup_created', center_button );
+	doc.on( 'agm_google_maps-admin-save_request', save_map );
 });

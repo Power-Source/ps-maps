@@ -181,19 +181,19 @@ jQuery(function () {
 	// ----- Hooks -----
 
 	// Add options
-	jQuery(document).bind( 'agm_google_maps-admin-options_initialized', init_options );
+	jQuery(document).on( 'agm_google_maps-admin-options_initialized', init_options );
 
 	// Save Places options
-	jQuery(document).bind( 'agm_google_maps-admin-save_request', save_options);
+	jQuery(document).on( 'agm_google_maps-admin-save_request', save_options);
 
 	// Load Places
 	jQuery(document).on("agm_google_maps-admin-map_initialized", prepare_map);
 
 	// Repaint locations on options close
-	jQuery(document).bind('agm_google_maps-admin-options_dialog-closed', options_closed);
+	jQuery(document).on('agm_google_maps-admin-options_dialog-closed', options_closed);
 
 	// Repaint all places when adding a marker (inefficient, but easy)
-	jQuery(document).bind( 'agm_google_maps-admin-marker_added', marker_added);
+	jQuery(document).on( 'agm_google_maps-admin-marker_added', marker_added);
 
 	// Null out places for removed marker
 	jQuery(document).on("agm_google_maps-admin-marker_removed", marker_removed);

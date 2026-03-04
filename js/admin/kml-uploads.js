@@ -9,7 +9,7 @@
 jQuery(function () {
 
 // Add options
-jQuery(document).bind(
+jQuery(document).on(
 	'agm_google_maps-admin-options_initialized',
 	function( ev, options, data ) {
 

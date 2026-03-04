@@ -163,7 +163,7 @@ jQuery(function() {
 
 				load_prev
 					.appendTo( paging )
-					.bind( 'click', function prev_click() {
+					.on( 'click', function prev_click() {
 						paging.attr( 'data-increment', prev_increment );
 						jQuery.post(
 							window.ajaxurl,
@@ -183,7 +183,7 @@ jQuery(function() {
 
 				load_next
 					.appendTo( paging )
-					.bind( 'click', function next_click() {
+					.on( 'click', function next_click() {
 						paging.attr( 'data-increment', next_increment );
 						jQuery.post(
 							window.ajaxurl,
