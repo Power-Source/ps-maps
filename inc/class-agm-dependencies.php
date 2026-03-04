@@ -83,7 +83,7 @@ if ( ! is_admin() ) { // Doesn't work on admin
 				'ajax_url'     => admin_url( 'admin-ajax.php' ),
 				'root_url'     => AGM_PLUGIN_URL,
 				'is_multisite' => (int) is_multisite(),
-				'libraries'    => array( 'panoramio' ),
+				'libraries'    => array(),
 				'maps_api_key' => !empty($opt['map_api_key']) ? $opt['map_api_key'] : '',
 			);
 

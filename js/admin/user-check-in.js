@@ -192,10 +192,9 @@ jQuery(function init_profile_page() {
 			preview_l = jQuery( '.the-preview-l', me ),
 			lat = jQuery( '.read-only .lat', me ).first().text(),
 			lng = jQuery( '.read-only .lng', me ).first().text(),
-			preview_url = 'http://maps.googleapis.com/maps/api/staticmap' +
+			preview_url = 'https://maps.googleapis.com/maps/api/staticmap' +
 				'?maptype=roadmap' +
-				'&markers=' + lat + ',' + lng +
-				'&sensor=false';
+				'&markers=' + lat + ',' + lng;
 
 		preview_s.html( '<img src="' + preview_url + '&zoom=12&size=128x64" />' );
 		preview_l.html( '<img src="' + preview_url + '&zoom=14&size=240x195" />' );

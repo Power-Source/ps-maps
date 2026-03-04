@@ -47,34 +47,41 @@ function loadGoogleMaps () {
 		return agmInitialize();
 	}
 
-	var protocol = '',
-		language = '',
-		src 	= '',
+	var language = '',
+		src 	= 'https://maps.googleapis.com/maps/api/js?v=3',
 		script = document.createElement("script"),
-		libs = _agm.libraries.join(","),
+		libs = (_agm.libraries || []),
+		filtered_libs = [],
+		libraries = '',
+		ii = 0,
 		api_key = ((window || {})._agm || {}).maps_api_key || false
 	;
-
-	try { protocol = document.location.protocol; }
-	catch (ex) { protocol = 'http:'; }
 
 	if ( window._agmLanguage !== undefined ) {
 		try { language = '&language=' + window._agmLanguage; }
 		catch (ex) { language = ''; }
 	}
 	script.type = "text/javascript";
+	script.async = true;
+	script.defer = true;
 
 	if (api_key) {
-		api_key = "&key=" + api_key;
+		src += "&key=" + api_key;
 	}
 
-	src = "//maps.google.com/maps/api/js?v=3" + api_key + "&libraries=";
+	for ( ii = 0; ii < libs.length; ii += 1 ) {
+		if ( libs[ii] && libs[ii] !== 'panoramio' ) {
+			filtered_libs.push( libs[ii] );
+		}
+	}
+	libraries = filtered_libs.join(",");
+	if ( libraries ) {
+		src += "&libraries=" + libraries;
+	}
 
-	script.src = protocol +  src +
-		libs +
-		"&sensor=false" +
+	script.src = src +
 		language +
-		"&callback=agmInitialize";
+		"&loading=async&callback=agmInitialize";
 	document.body.appendChild(script);
 }
 
