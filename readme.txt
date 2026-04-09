@@ -46,6 +46,11 @@ Füge jeder Karte mehrere Markierungen hinzu!
 
 == ChangeLog ==
 
+= 1.0.2 =
+
+* Bug fix: Shortcode-Attributwerte mit typografischen Anführungszeichen werden jetzt korrekt normalisiert (z.B. query="all").
+* Bug fix: Boolesche Shortcode-Attribute wie show_markers werten jetzt explizite false/no/off-Werte korrekt aus und werden nicht mehr durch leere Wert-Prüfungen übersprungen.
+
 = 1.0.1 =
 
 * PHP 8+ compatibility: Removed 58 deprecated error suppression operators (@) from core plugin files
