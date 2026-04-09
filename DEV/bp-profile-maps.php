@@ -552,7 +552,7 @@ if ( defined( 'BP_PLUGIN_DIR' ) ) :
 			$address_field = $this->_get_options( 'address_field' );
 			if ( ! $address_field ) { return false; }
 
-			// https://github.com/cp-psource/forums/topic/visibility-issue-with-google-maps-and-bp-profile-add-on
+			// https://psource.eimen.net/forums/topic/visibility-issue-with-google-maps-and-bp-profile-add-on
 			if ( ! self::bp_current_user_can_see_field( $user_id, $address_field ) ) { return false; }
 
 			$address = bp_get_profile_field_data(
@@ -729,7 +729,7 @@ if ( defined( 'BP_PLUGIN_DIR' ) ) :
 					$val = xprofile_get_field_id_from_name( $val );
 				}
 
-				// https://github.com/cp-psource/forums/topic/visibility-issue-with-google-maps-and-bp-profile-add-on
+				// https://psource.eimen.net/forums/topic/visibility-issue-with-google-maps-and-bp-profile-add-on
 				if ( ! Agm_Bp_Pm_UserPages::bp_current_user_can_see_field( $user_id, $val ) ) {
 					$denied = true;
 					break;

@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WPMU Dev code library
- * Plugin URI:  https://github.com/cp-psource/
+ * Plugin URI:  https://psource.eimen.net/
  * Description: Framework to support creating WordPress plugins and themes.
  * Version:     3.0.0
  * Author:      PSOURCE
- * Author URI:  https://github.com/cp-psource/
+ * Author URI:  https://psource.eimen.net/
  * Textdomain:  wpmu-lib
  *
  * ============================================================================

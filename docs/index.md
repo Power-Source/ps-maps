@@ -6,8 +6,8 @@ title: "PS Maps"
 <h2 align="center" style="color:#38c2bb;">📚 PS Maps</h2>
 
 <div class="menu">
-  <a href="https://github.com/cp-psource/ps-maps/discussions" style="color:#38c2bb;">💬 Forum</a>
-  <a href="https://github.com/cp-psource/ps-maps/releases" style="color:#38c2bb;">📝 Download</a>
+  <a href="https://psource.eimen.net/ps-maps/discussions" style="color:#38c2bb;">💬 Forum</a>
+  <a href="https://psource.eimen.net/ps-maps/releases" style="color:#38c2bb;">📝 Download</a>
 </div>
 
 Einfaches Einbetten, Anpassen und Verwenden von Google Maps auf Deiner WordPress-Seite - in Posts, Seiten oder als benutzerfreundliches Widget kannst Du lokale Bilder anzeigen und Deinen Seiten-Besuchern in Sekundenschnelle eine Interaktive Googlemap mit einer Unzahl an Optionen und Möglichkeiten geben

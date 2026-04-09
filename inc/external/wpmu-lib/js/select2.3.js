@@ -1,5 +1,5 @@
 /*! WPMU Dev code library - v2.0.3
- * https://github.com/cp-psource/
+ * https://psource.eimen.net/
  * Copyright (c) 2016; * Licensed GPLv2+ */
 /*!
  * https://github.com/select2/select2/blob/master/dist/js/select2.full.js

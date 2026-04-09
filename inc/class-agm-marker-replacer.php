@@ -182,11 +182,21 @@ class AgmMarkerReplacer {
 			$overrides['map_type'] = strtoupper( $atts['map_type'] );
 		}
 
-		if ( ! empty( $atts['show_map'] ) ) { $overrides['show_map'] = (int) agm_positive_values( $atts['show_map'] ); }
-		if ( ! empty( $atts['show_markers'] ) ) { $overrides['show_markers'] = (int) agm_positive_values( $atts['show_markers'] ); }
-		if ( ! empty( $atts['show_images'] ) ) { $overrides['show_images'] = (int) agm_positive_values( $atts['show_images'] ); }
-		if ( ! empty( $atts['show_posts'] ) ) { $overrides['show_posts'] = (int) agm_positive_values( $atts['show_posts'] ); }
-		if ( ! empty( $atts['plot_routes'] ) ) { $overrides['plot_routes'] = (int) agm_positive_values( $atts['plot_routes'] ); }
+		if ( isset( $atts['show_map'] ) && null !== $atts['show_map'] && '' !== trim( (string) $atts['show_map'] ) ) {
+			$overrides['show_map'] = (int) agm_positive_values( $atts['show_map'] );
+		}
+		if ( isset( $atts['show_markers'] ) && null !== $atts['show_markers'] && '' !== trim( (string) $atts['show_markers'] ) ) {
+			$overrides['show_markers'] = (int) agm_positive_values( $atts['show_markers'] );
+		}
+		if ( isset( $atts['show_images'] ) && null !== $atts['show_images'] && '' !== trim( (string) $atts['show_images'] ) ) {
+			$overrides['show_images'] = (int) agm_positive_values( $atts['show_images'] );
+		}
+		if ( isset( $atts['show_posts'] ) && null !== $atts['show_posts'] && '' !== trim( (string) $atts['show_posts'] ) ) {
+			$overrides['show_posts'] = (int) agm_positive_values( $atts['show_posts'] );
+		}
+		if ( isset( $atts['plot_routes'] ) && null !== $atts['plot_routes'] && '' !== trim( (string) $atts['plot_routes'] ) ) {
+			$overrides['plot_routes'] = (int) agm_positive_values( $atts['plot_routes'] );
+		}
 
 		return apply_filters( 'agm-shortcode-overrides', $overrides, $atts );
 	}
@@ -232,6 +242,31 @@ class AgmMarkerReplacer {
 	}
 
 	/**
+	 * Normalizes shortcode attributes to make parsing robust against smart quotes.
+	 *
+	 * @since 1.0.1
+	 * @param array $atts Raw shortcode attributes.
+	 * @return array
+	 */
+	private function normalize_shortcode_attributes( $atts ) {
+		if ( ! is_array( $atts ) ) {
+			return array();
+		}
+
+		foreach ( $atts as $key => $value ) {
+			if ( ! is_string( $value ) ) {
+				continue;
+			}
+
+			$value = trim( $value );
+			$value = preg_replace( '/^[\x{201C}\x{201D}\x{2018}\x{2019}"\']+|[\x{201C}\x{201D}\x{2018}\x{2019}"\']+$/u', '', $value );
+			$atts[ $key ] = $value;
+		}
+
+		return $atts;
+	}
+
+	/**
 	 * Processes text and replaces recognized tags.
 	 *
 	 * @access public
@@ -244,6 +279,7 @@ class AgmMarkerReplacer {
 			$defaults,
 			$atts
 		);
+		$atts = $this->normalize_shortcode_attributes( $atts );
 
 		// Stacked queries fix
 		$atts['query'] = str_replace(

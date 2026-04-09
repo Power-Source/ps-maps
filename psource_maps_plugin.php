@@ -1,19 +1,19 @@
 <?php
 /**
  * Plugin Name: PS Maps
- * Plugin URI:  https://power-source.github.io/ps-maps/
+ * Plugin URI:  https://psource.eimen.net/wiki/ps-maps-dokumentation/
  * Description: Google Maps lässt sich ganz einfach und Datenschutzsicher in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.
  * Version:     1.0.1
  * Text Domain: agm_google_maps
  * Domain Path: languages
  * Author:      PSOURCE
- * Author URI:  https://github.com/cp-psource
+ * Author URI:  https://psource.eimen.net
  *
  * @package  AgmMaps
  */
 
 /*
-Copyright 2011-2026 PSOURCE (https://github.com/cp-psource)
+Copyright 2011-2026 PSOURCE (https://psource.eimen.net)
 Author - DerN3rd (PSOURCE)
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by

@@ -67,17 +67,17 @@ class Agm_AdminHelp {
 					'</a>' .
 				'</li>' .
 				'<li>' .
-					'<a href="https://github.com/cp-psource/ps-maps/wiki" target="_blank">' .
+					'<a href="https://psource.eimen.net/ps-maps/wiki" target="_blank">' .
 						__( 'Installation and instructions page', AGM_LANG ) .
 					'</a>' .
 				'</li>' .
 				'<li>' .
-					'<a href="https://github.com/cp-psource/ps-maps/discussions" target="_blank">' .
+					'<a href="https://psource.eimen.net/ps-maps/discussions" target="_blank">' .
 						__( 'Support forum', AGM_LANG ) .
 					'</a>' .
 				'</li>' .
 				'<li>' .
-					'<a href="https://github.com/cp-psource/ps-maps/issues" target="_blank">' .
+					'<a href="https://psource.eimen.net/ps-maps/issues" target="_blank">' .
 						__( 'Bug Report', AGM_LANG ) .
 					'</a>' .
 				'</li>' .
