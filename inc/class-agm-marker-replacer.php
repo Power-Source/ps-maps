@@ -214,6 +214,7 @@ class AgmMarkerReplacer {
 			'query' => null,
 			'overlay' => null,
 			'network' => null,
+			'map_id' => null,
 		// Appearance overrides
 			'height' => null,
 			'width' => null,

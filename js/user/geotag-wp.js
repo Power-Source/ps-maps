@@ -6,7 +6,7 @@
 /*global _agm:false */
 /*global navigator:false */
 
-jQuery(document).bind(
+jQuery(document).on(
 	"agm_google_maps-user-adding_marker",
 	function (e, marker, idx, map, original) {
 		if (original === undefined || ! ("disposition" in original) ) { return false; }
@@ -16,7 +16,7 @@ jQuery(document).bind(
 	}
 );
 
-jQuery(document).bind(
+jQuery(document).on(
 	"agm_google_maps-user-map_initialized",
 	function (e, map, data) {
 		// Short-circuit from marker iteration if nothing to do

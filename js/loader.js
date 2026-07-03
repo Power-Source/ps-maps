@@ -19,6 +19,15 @@
  */
 window._agmMapIsLoaded = false;
 
+function agmEnsureLibrary (libraries, library) {
+	if ( ! library || jQuery.inArray(library, libraries) >= 0 ) {
+		return libraries;
+	}
+
+	libraries.push(library);
+	return libraries;
+}
+
 
 /**
  * Callback - triggers loaded flag setting.
@@ -68,6 +77,10 @@ function loadGoogleMaps () {
 	if (api_key) {
 		src += "&key=" + api_key;
 	}
+
+	libs = libs.slice(0);
+	agmEnsureLibrary(libs, 'marker');
+	agmEnsureLibrary(libs, 'routes');
 
 	for ( ii = 0; ii < libs.length; ii += 1 ) {
 		if ( libs[ii] && libs[ii] !== 'panoramio' ) {

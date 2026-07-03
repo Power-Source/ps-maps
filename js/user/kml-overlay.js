@@ -9,7 +9,7 @@
 jQuery(function () {
 
 // Load KML overlay
-jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, data) {
+jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data) {
 	var url = '';
 
 	try { url = data.kml_url ? data.kml_url : ''; }

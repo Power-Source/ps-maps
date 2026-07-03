@@ -33,7 +33,7 @@ class Agm_Mab_AdditionalBehaviors {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/additional-behaviors.min.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/additional-behaviors.js', 'front' );
 	}
 
 	public function add_behaviors_data( $data ) {

@@ -15,6 +15,9 @@
 
 jQuery(function () {
 	if ( undefined === window._agm ) { return; }
+	var createMapMarker = window._agmCreateMapMarker || function (options) {
+		return new window.google.maps.Marker(options);
+	};
 
 	var doc = jQuery( document ),
 		_map = null,
@@ -57,7 +60,7 @@ jQuery(function () {
 			_center.setMap( null );
 		}
 
-		_center = new window.google.maps.Marker({
+		_center = createMapMarker({
 			title: 'Center',
             map: _map,
             icon: _icon,
@@ -71,9 +74,10 @@ jQuery(function () {
 
 	var save_map = function save_map( event, request ) {
 		if ( null !== _center ) {
+			var centerPos = _center.getPosition();
 			request.map_center = [
-				_center.position.lat(),
-				_center.position.lng()
+				centerPos.lat(),
+				centerPos.lng()
 			];
 		}
 	};

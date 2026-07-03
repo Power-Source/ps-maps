@@ -14,7 +14,7 @@ jQuery(function () {
 	}
 
 	function marker_click_popup (e, marker, map) {
-		marker._agmInfo.open(map, marker);
+		window._agmOpenInfoWindow(marker._agmInfo, map, marker);
 	}
 
 	var data = _agm.additional_behaviors || {};

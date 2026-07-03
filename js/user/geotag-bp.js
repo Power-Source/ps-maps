@@ -78,7 +78,7 @@ jQuery(function () {
 		if ( ! link.length ) {
 			address.after('<a href="#change-address" id="agm-gwp-formatted_address" />');
 			link = root.find("#agm-gwp-formatted_address");
-			link.unbind("click").bind("click", open_location_map_editor);
+			link.off("click").on("click", open_location_map_editor);
 		}
 		link.text( address_val );
 	}
@@ -162,7 +162,7 @@ jQuery(function () {
 	init();
 });
 
-jQuery(document).bind(
+jQuery(document).on(
 	"agm_google_maps-user-adding_marker",
 	function (e, marker, idx, map, original) {
 		if (undefined === original) { return false; }

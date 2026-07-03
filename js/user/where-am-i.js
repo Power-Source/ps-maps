@@ -13,7 +13,7 @@ jQuery(function () {
 if ( !!! navigator.geolocation ) { return false; }
 
 if ( _agmWmi.add_marker ) {
-	jQuery( document ).bind(
+	jQuery( document ).on(
 		'agm_google_maps-user-map_postprocess_markers',
 		function (e, data, markers, callback) {
 			if ( _agmWmi.shortcode_only && ! data.visitor_location ) {
@@ -43,7 +43,7 @@ if ( _agmWmi.add_marker ) {
 		}
 	);
 } else {
-	jQuery( document ).bind(
+	jQuery( document ).on(
 		'agm_google_maps-user-map_initialized',
 		function (e, map, data) {
 			if ( _agmWmi.shortcode_only && ! data.visitor_location ) {
@@ -68,7 +68,7 @@ if ( _agmWmi.add_marker ) {
 						icon = _agm.root_url + '/img/system/marker.png';
 					}
 
-					var marker = new window.google.maps.Marker({
+					var marker = window._agmCreateMapMarker({
 						"title": _agmWmi.marker_label,
 						"map": map,
 						"icon": icon,
@@ -82,13 +82,9 @@ if ( _agmWmi.add_marker ) {
 						"maxWidth": 200
 					});
 
-					window.google.maps.event.addListener(
-						marker,
-						'click',
-						function() {
-							info.open( map, marker );
-						}
-					);
+					marker.addListener('click', function() {
+						window._agmOpenInfoWindow(info, map, marker);
+					});
 
 					if ( _agmWmi.auto_center ) { map.setCenter( pos ); }
 				}

@@ -42,7 +42,7 @@ class Agm_PlacesAdminPages {
 
 	public function load_scripts() {
 		global $hook_suffix;
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/places.min.js', $hook_suffix );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/places.js', $hook_suffix );
 	}
 
 	public function prepare_for_save( $options, $raw ) {
@@ -185,7 +185,7 @@ class Agm_PlacesUserPages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/places.min.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/places.js', 'front' );
 	}
 
 	public function prepare_for_load( $options, $raw ) {

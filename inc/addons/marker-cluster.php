@@ -24,8 +24,8 @@ class Agm_Mc_UserPages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/external/markerclusterer_packed.min.js', 'front' );
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/marker-cluster.min.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/external/markerclusterer_packed.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/marker-cluster.js', 'front' );
 	}
 };
 

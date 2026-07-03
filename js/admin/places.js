@@ -9,6 +9,12 @@
 
 jQuery(function () {
 	var _places = {};
+	var createMapMarker = window._agmCreateMapMarker || function (options) {
+		return new window.google.maps.Marker(options);
+	};
+	var openInfoWindow = window._agmOpenInfoWindow || function (infoWindow, map, marker) {
+		infoWindow.open(map, marker);
+	};
 
 	function initialize_all_markers_places( map, show, distance, types ) {
 		var show_places = show || jQuery( '#agm-show_places' ).is( ':checked' ),
@@ -52,11 +58,8 @@ jQuery(function () {
 
 		jQuery.each(places, function () {
 			var place = this,
-				place_icon = new window.google.maps.MarkerImage(
-					place.icon.toString(),
-					null, null, null, new window.google.maps.Size( 32, 32 )
-				),
-				place_marker = new window.google.maps.Marker({
+				place_icon = place.icon.toString(),
+				place_marker = createMapMarker({
 					"title": place.name,
 					"map": map,
 					"icon": place_icon,
@@ -69,8 +72,8 @@ jQuery(function () {
 					"maxWidth": 400
 				});
 
-			window.google.maps.event.addListener( place_marker, 'click', function() {
-				info.open( map, place_marker );
+			place_marker.addListener( 'click', function() {
+				openInfoWindow( info, map, place_marker );
 			});
 
 			_places[pos].push( place_marker );

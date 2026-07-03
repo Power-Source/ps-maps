@@ -36,6 +36,7 @@ if ( ! is_admin() ) { // Doesn't work on admin
 				'root_url'     => AGM_PLUGIN_URL,
 				'is_multisite' => (int) is_multisite(),
 				'libraries'    => array(),
+				'map_id'       => !empty($opt['map_id']) ? $opt['map_id'] : '',
 				'maps_api_key' => !empty($opt['map_api_key']) ? $opt['map_api_key'] : '',
 			);
 			$vars = apply_filters(
@@ -170,6 +171,7 @@ if ( ! is_admin() ) { // Doesn't work on admin
 				'root_url'     => AGM_PLUGIN_URL,
 				'is_multisite' => (int) is_multisite(),
 				'libraries'    => array(),
+				'map_id'       => !empty($opt['map_id']) ? $opt['map_id'] : '',
 				'maps_api_key' => !empty($opt['map_api_key']) ? $opt['map_api_key'] : '',
 			);
 

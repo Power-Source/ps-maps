@@ -6,7 +6,7 @@
 /*global _agm:false */
 /*global navigator:false */
 
-jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
+jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
 	if ( ! data.hide_map_markers ) { return false; }
 
 	jQuery.each(markers, function () {

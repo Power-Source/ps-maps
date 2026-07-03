@@ -8,7 +8,7 @@
 
 
 // Load selected Places
-jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
+jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
 	function initialize_all_markers_places (map, show, distance, types) {
 		var show_places = show,
 			places_radius = distance,
@@ -41,7 +41,7 @@ jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, 
 					place.icon.toString(),
 					null, null, null, new window.google.maps.Size(32, 32)
 				),
-				place_marker = new window.google.maps.Marker({
+				place_marker = window._agmCreateMapMarker({
 					"title": place.name,
 					"map": map,
 					"icon": place_icon,
@@ -54,13 +54,9 @@ jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, 
 					"maxWidth": 400
 				});
 
-			window.google.maps.event.addListener(
-				place_marker,
-				'click',
-				function() {
-					info.open( map, place_marker );
-				}
-			);
+			place_marker.addListener('click', function() {
+				window._agmOpenInfoWindow(info, map, place_marker);
+			});
 		});
 	}
 

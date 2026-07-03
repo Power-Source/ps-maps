@@ -29,5 +29,5 @@ jQuery(function init_addon() {
 		}
 	};
 
-	doc.bind( 'agm_google_maps-user-map_initialized', init_overlay );
+	doc.on( 'agm_google_maps-user-map_initialized', init_overlay );
 });

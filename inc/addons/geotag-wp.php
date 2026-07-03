@@ -98,7 +98,7 @@ class Agm_GwpAdminPages {
 			return false; // Invalid post type
 		}
 
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/geotag-wp.min.js', $hook_suffix );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/geotag-wp.js', $hook_suffix );
 	}
 
 	public function render_metabox() {

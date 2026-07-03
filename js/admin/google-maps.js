@@ -15,6 +15,149 @@
 window.AgmMapHandler = null;
 
 jQuery(function( ) {
+	var normalizeMarkerPosition = function (position) {
+		if ( ! position ) {
+			return position;
+		}
+
+		if ( 'function' === typeof position.lat && 'function' === typeof position.lng ) {
+			return position;
+		}
+
+		if ( undefined !== position.lat && undefined !== position.lng ) {
+			return new window.google.maps.LatLng(position.lat, position.lng);
+		}
+
+		return position;
+	};
+
+	var extractMarkerIcon = function (icon) {
+		if ( ! icon ) {
+			return '';
+		}
+
+		if ( 'string' === typeof icon ) {
+			return icon;
+		}
+
+		if ( 'object' === typeof icon && icon.url ) {
+			return icon.url;
+		}
+
+		return icon.toString ? icon.toString() : '';
+	};
+
+	var createMarkerImageContent = function (icon, title) {
+		var image = document.createElement('img');
+		image.className = 'marker-icon-32 agm-advanced-marker';
+		image.src = icon;
+		image.alt = title || '';
+		image.title = title || '';
+		image.style.width = '32px';
+		image.style.height = '32px';
+		return image;
+	};
+
+	var createLegacyMarker = function (options) {
+		return new window.google.maps.Marker(options);
+	};
+
+	var createAdvancedMarkerWrapper = function (options) {
+		var position = normalizeMarkerPosition(options.position);
+		var icon = extractMarkerIcon(options.icon);
+		var content = icon ? createMarkerImageContent(icon, options.title) : null;
+		var markerView = new window.google.maps.marker.AdvancedMarkerElement({
+			map: options.map,
+			position: position,
+			title: options.title || '',
+			content: content || undefined,
+			gmpDraggable: !!options.draggable,
+			zIndex: options.zIndex
+		});
+		var visible = true;
+		var wrapper = {
+			_agmAdvancedMarker: markerView,
+			_agmMarkerContent: content,
+			draggable: !!options.draggable,
+			clickable: options.clickable !== false,
+			getPosition: function () {
+				return normalizeMarkerPosition(markerView.position);
+			},
+			setPosition: function (newPosition) {
+				markerView.position = normalizeMarkerPosition(newPosition);
+			},
+			getMap: function () {
+				return markerView.map || null;
+			},
+			setMap: function (map) {
+				markerView.map = map || null;
+			},
+			getTitle: function () {
+				return markerView.title || '';
+			},
+			setTitle: function (title) {
+				markerView.title = title || '';
+				if ( wrapper._agmMarkerContent ) {
+					wrapper._agmMarkerContent.alt = title || '';
+					wrapper._agmMarkerContent.title = title || '';
+				}
+			},
+			getIcon: function () {
+				return icon;
+			},
+			setIcon: function (newIcon) {
+				icon = extractMarkerIcon(newIcon);
+				if ( ! wrapper._agmMarkerContent ) {
+					wrapper._agmMarkerContent = createMarkerImageContent(icon, wrapper.getTitle());
+					markerView.content = wrapper._agmMarkerContent;
+					return;
+				}
+
+				wrapper._agmMarkerContent.src = icon;
+			},
+			setVisible: function (state) {
+				visible = !!state;
+				if ( wrapper._agmMarkerContent ) {
+					wrapper._agmMarkerContent.style.display = visible ? '' : 'none';
+				}
+				if ( markerView.element ) {
+					markerView.element.style.display = visible ? '' : 'none';
+				}
+			},
+			getVisible: function () {
+				return visible;
+			},
+			addListener: function (eventName, handler) {
+				return markerView.addListener(eventName, handler);
+			}
+		};
+
+		return wrapper;
+	};
+
+	window._agmCreateMapMarker = function (options) {
+		if (
+			options && options.map && options.map.__agmSupportsAdvancedMarkers &&
+			window.google && window.google.maps && window.google.maps.marker &&
+			window.google.maps.marker.AdvancedMarkerElement
+		) {
+			return createAdvancedMarkerWrapper(options);
+		}
+
+		return createLegacyMarker(options);
+	};
+
+	window._agmOpenInfoWindow = function (infoWindow, map, marker) {
+		if ( marker && marker._agmAdvancedMarker ) {
+			infoWindow.open({
+				map: map || marker.getMap(),
+				anchor: marker._agmAdvancedMarker
+			});
+			return;
+		}
+
+		infoWindow.open(map, marker);
+	};
 
 	/**
 	 * Admin-side map handler object.
@@ -597,7 +740,7 @@ jQuery(function( ) {
 			var markerPosition = _markers.length;
 
 			map.setCenter(pos);
-			var marker = new window.google.maps.Marker({
+			var marker = window._agmCreateMapMarker({
 				title: title,
 				map: map,
 				icon: icon,
@@ -610,12 +753,12 @@ jQuery(function( ) {
 				"content": createInfoContent(title, body, icon, markerPosition),
 				"maxWidth": 400
 			});
-			window.google.maps.event.addListener(marker, 'click', function( ) {
-				info.open(map, marker);
+			marker.addListener('click', function( ) {
+				window._agmOpenInfoWindow(info, map, marker);
 			});
 			marker._agmInfo = info;
 			if ( data.snapping ) {
-				window.google.maps.event.addListener(marker, 'dragend', function( ) {
+				marker.addListener('dragend', function( ) {
 					var geocoder = new window.google.maps.Geocoder();
 					geocoder.geocode({'latLng': marker.getPosition()}, function ( results, status ) {
 						if ( status === window.google.maps.GeocoderStatus.OK ) {
@@ -696,6 +839,7 @@ jQuery(function( ) {
 			var html = '<ul>';
 
 			jQuery.each(_markers, function ( idx, mark ) {
+				var position = mark.getPosition();
 				var item, icon = mark.getIcon();
 
 				if ( undefined !== icon.url ) {
@@ -713,8 +857,8 @@ jQuery(function( ) {
 						'<a href="#agm_mh_marker-' + idx + '" class="button-secondary agm_mh_marker_delete_item"><i class="dashicons dashicons-trash"></i> ' + l10nStrings.delete_item + '</a>' +
 					'</span>' +
 					'<span class="marker-infos">' +
-						'Lat: <span class="click-sel">' + ( mark.position.lat().toFixed(5) ) + '</span> ' +
-						'| Long: <span class="click-sel">' + ( mark.position.lng().toFixed(5) ) + '</span>' +
+						'Lat: <span class="click-sel">' + ( position.lat().toFixed(5) ) + '</span> ' +
+						'| Long: <span class="click-sel">' + ( position.lng().toFixed(5) ) + '</span>' +
 					'</span>' +
 				'</li>';
 				html += item;
@@ -805,15 +949,23 @@ jQuery(function( ) {
 		function init() {
 			populateDefaults();
 			createMarkup();
+			var mapOptions = {
+				'zoom': parseInt(data.zoom) ? parseInt(data.zoom) : 1,
+				'minZoom': 1,
+				'center': new window.google.maps.LatLng(40.7171, -74.0039), // New York
+				'mapTypeId': window.google.maps.MapTypeId[data.map_type]
+			};
+			var resolvedMapId = data.map_id || (data.defaults && data.defaults.map_id) || _agm.map_id || 'DEMO_MAP_ID';
+			if ( resolvedMapId ) {
+				mapOptions.mapId = resolvedMapId;
+			}
+
 			map = new window.google.maps.Map(
 				jQuery( '.map_preview', container ).get(0),
-				{
-					'zoom': parseInt(data.zoom) ? parseInt(data.zoom) : 1,
-					'minZoom': 1,
-					'center': new window.google.maps.LatLng(40.7171, -74.0039), // New York
-					'mapTypeId': window.google.maps.MapTypeId[data.map_type]
-				}
+				mapOptions
 			);
+			map.__agmSupportsAdvancedMarkers = !!resolvedMapId;
+			map.__agmMapId = resolvedMapId;
 
 			// Set initial location, if possible
 			// and if not already queued to be set by markers

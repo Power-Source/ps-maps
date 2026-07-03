@@ -36,7 +36,7 @@ class Agm_Cm_AdminPages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/center-map.min.js' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/center-map.js' );
 	}
 
 	public function sanitize_options( $options, $raw ) {

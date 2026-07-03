@@ -41,5 +41,5 @@ jQuery(function () {
 		map.setCenter( new window.google.maps.LatLng( lat, lng ) );
 	};
 
-	doc.bind( 'agm:init', center_map );
+	doc.on( 'agm:init', center_map );
 });

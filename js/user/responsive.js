@@ -6,7 +6,7 @@
 /*global _agm:false */
 /*global navigator:false */
 
-jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, data) {
+jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data) {
 	if ( ! data.is_responsive ) {
 		return false; // Short out
 	}
@@ -19,7 +19,7 @@ jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, 
 		map_width = el.width()
 	;
 
-	jQuery(window).resize(function () {
+	jQuery(window).on('resize', function () {
 		var width = parent.width();
 
 		if ( data.responsive_respect_width ) {
@@ -30,5 +30,5 @@ jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, 
 		el.width(width);
 		window.google.maps.event.trigger(map, 'resize');
 		map.setCenter(center);
-	}).trigger('resize');
+	}).triggerHandler('resize');
 });

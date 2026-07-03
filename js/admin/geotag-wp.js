@@ -8,6 +8,10 @@
 /*global navigator:false */
 
 jQuery(function () {
+	var createMapMarker = window._agmCreateMapMarker || function (options) {
+		return new window.google.maps.Marker(options);
+	};
+
 	function _draw_centered_map (lat, lng) {
 		var root = jQuery( '#agm-gwp-location_root' ),
 			address = root.find( 'label[for="agm-address"]' ),
@@ -17,17 +21,25 @@ jQuery(function () {
 			.hide()
 			.after( '<div id="agm-gwp-target_map" style="width:100%; height:300px"></div>' );
 
+		var mapOptions = {
+			'zoom': 12,
+			'minZoom': 1,
+			'center': center,
+			'mapTypeId': window.google.maps.MapTypeId['ROADMAP']
+		};
+		var resolvedMapId = _agm.map_id || 'DEMO_MAP_ID';
+		if ( resolvedMapId ) {
+			mapOptions.mapId = resolvedMapId;
+		}
+
 		var map = new window.google.maps.Map(
 			jQuery( '#agm-gwp-target_map' ).get(0),
-			{
-				'zoom': 12,
-				'minZoom': 1,
-				'center': center,
-				'mapTypeId': window.google.maps.MapTypeId['ROADMAP']
-			}
+			mapOptions
 		);
+		map.__agmSupportsAdvancedMarkers = !!resolvedMapId;
+		map.__agmMapId = resolvedMapId;
 
-		var marker = new window.google.maps.Marker({
+		var marker = createMapMarker({
 			title: 'Me',
 			map: map,
 			icon: _agm.root_url + '/img/system/marker.png',
@@ -36,7 +48,7 @@ jQuery(function () {
 			position: center
 		});
 
-		window.google.maps.event.addListener(marker, 'dragend', function() {
+		marker.addListener('dragend', function() {
 			var geocoder = new window.google.maps.Geocoder();
 
 			geocoder.geocode({'latLng': marker.getPosition()}, function (results, status) {

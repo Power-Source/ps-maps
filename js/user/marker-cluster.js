@@ -8,7 +8,7 @@
 
 jQuery(function () {
 
-jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
+jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
 	if ( ! markers || ! markers.length ) { return; }
 	var markerCluster = new window.MarkerClusterer(
 		map,
@@ -33,7 +33,7 @@ jQuery(document).bind("agm_google_maps-user-map_initialized", function (e, map, 
 			content: contents
 		});
 
-		info.open(map, clustered[0]);
+		window._agmOpenInfoWindow(info, map, clustered[0]);
 	});
 });
 

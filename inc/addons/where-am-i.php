@@ -174,7 +174,7 @@ class Agm_Wmi_UserPages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/where-am-i.min.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/where-am-i.js', 'front' );
 	}
 
 	public function add_wmi_data() {

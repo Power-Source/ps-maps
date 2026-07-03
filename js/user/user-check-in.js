@@ -58,7 +58,7 @@ jQuery( function init_agm_user_check_in() {
 		}
 	};
 
-	doc.bind( "agm_google_maps-user-map_initialized", map_init );
+	doc.on( "agm_google_maps-user-map_initialized", map_init );
 
 
 	// -----

@@ -19,6 +19,151 @@ _agm.initialized = false;
 jQuery(function() {
 _agm.initialized = false;
 
+var normalizeMarkerPosition = function (position) {
+	if ( ! position ) {
+		return position;
+	}
+
+	if ( 'function' === typeof position.lat && 'function' === typeof position.lng ) {
+		return position;
+	}
+
+	if ( undefined !== position.lat && undefined !== position.lng ) {
+		return new window.google.maps.LatLng(position.lat, position.lng);
+	}
+
+	return position;
+};
+
+var extractMarkerIcon = function (icon) {
+	if ( ! icon ) {
+		return '';
+	}
+
+	if ( 'string' === typeof icon ) {
+		return icon;
+	}
+
+	if ( 'object' === typeof icon && icon.url ) {
+		return icon.url;
+	}
+
+	return icon.toString ? icon.toString() : '';
+};
+
+var createMarkerImageContent = function (icon, title) {
+	var image = document.createElement('img');
+	image.className = 'marker-icon-32 agm-advanced-marker';
+	image.src = icon;
+	image.alt = title || '';
+	image.title = title || '';
+	image.style.width = '32px';
+	image.style.height = '32px';
+	return image;
+};
+
+var createLegacyMarker = function (options) {
+	return new window.google.maps.Marker(options);
+};
+
+var createAdvancedMarkerWrapper = function (options) {
+	var position = normalizeMarkerPosition(options.position);
+	var icon = extractMarkerIcon(options.icon);
+	var content = icon ? createMarkerImageContent(icon, options.title) : null;
+	var markerView = new window.google.maps.marker.AdvancedMarkerElement({
+		map: options.map,
+		position: position,
+		title: options.title || '',
+		content: content || undefined,
+		gmpDraggable: !!options.draggable,
+		zIndex: options.zIndex
+	});
+	var visible = true;
+	var wrapper = {
+		_agmAdvancedMarker: markerView,
+		_agmMarkerContent: content,
+		draggable: !!options.draggable,
+		clickable: options.clickable !== false,
+		show_info: false,
+		getPosition: function () {
+			return normalizeMarkerPosition(markerView.position);
+		},
+		setPosition: function (newPosition) {
+			markerView.position = normalizeMarkerPosition(newPosition);
+		},
+		getMap: function () {
+			return markerView.map || null;
+		},
+		setMap: function (map) {
+			markerView.map = map || null;
+		},
+		getTitle: function () {
+			return markerView.title || '';
+		},
+		setTitle: function (title) {
+			markerView.title = title || '';
+			if ( wrapper._agmMarkerContent ) {
+				wrapper._agmMarkerContent.alt = title || '';
+				wrapper._agmMarkerContent.title = title || '';
+			}
+		},
+		getIcon: function () {
+			return icon;
+		},
+		setIcon: function (newIcon) {
+			icon = extractMarkerIcon(newIcon);
+			if ( ! wrapper._agmMarkerContent ) {
+				wrapper._agmMarkerContent = createMarkerImageContent(icon, wrapper.getTitle());
+				markerView.content = wrapper._agmMarkerContent;
+				return;
+			}
+
+			wrapper._agmMarkerContent.src = icon;
+		},
+		setVisible: function (state) {
+			visible = !!state;
+			if ( wrapper._agmMarkerContent ) {
+				wrapper._agmMarkerContent.style.display = visible ? '' : 'none';
+			}
+			if ( markerView.element ) {
+				markerView.element.style.display = visible ? '' : 'none';
+			}
+		},
+		getVisible: function () {
+			return visible;
+		},
+		addListener: function (eventName, handler) {
+			return markerView.addListener(eventName, handler);
+		}
+		};
+
+	return wrapper;
+};
+
+window._agmCreateMapMarker = function (options) {
+	if (
+		options && options.map && options.map.__agmSupportsAdvancedMarkers &&
+		window.google && window.google.maps && window.google.maps.marker &&
+		window.google.maps.marker.AdvancedMarkerElement
+	) {
+		return createAdvancedMarkerWrapper(options);
+	}
+
+	return createLegacyMarker(options);
+};
+
+window._agmOpenInfoWindow = function (infoWindow, map, marker) {
+	if ( marker && marker._agmAdvancedMarker ) {
+		infoWindow.open({
+			map: map || marker.getMap(),
+			anchor: marker._agmAdvancedMarker
+		});
+		return;
+	}
+
+	infoWindow.open(map, marker);
+};
+
 /**
  * Public side map handler.
  * Responsible for rendering maps on public facing pages.
@@ -31,6 +176,7 @@ window.AgmMapHandler = function (selector, data) {
 	var directionsDisplay;
 	var directionsService;
 	var travelType;
+	var directionsPolylines = [];
 	var mapId = 'map_' + Math.floor(Math.random()* new Date().getTime()) + '_preview';
 	var container = jQuery(selector);
 	var alignmentContainer;
@@ -41,6 +187,222 @@ window.AgmMapHandler = function (selector, data) {
 	var closeDirections = function () {
 		jQuery(selector + ' .agm_mh_directions_container').remove();
 		return false;
+	};
+
+	var canUseRoutesApi = function () {
+		return !! (
+			window.google &&
+			window.google.maps &&
+			window.google.maps.routes &&
+			window.google.maps.routes.Route &&
+			typeof window.google.maps.routes.Route.computeRoutes === 'function'
+		);
+	};
+
+	var getResolvedMapId = function () {
+		if ( data.map_id ) { return data.map_id; }
+		if ( data.defaults && data.defaults.map_id ) { return data.defaults.map_id; }
+		if ( _agm.map_id ) { return _agm.map_id; }
+		return 'DEMO_MAP_ID';
+	};
+
+	var clearDirectionsPolylines = function () {
+		jQuery.each(directionsPolylines, function () {
+			if ( this && typeof this.setMap === 'function' ) {
+				this.setMap(null);
+			}
+		});
+		directionsPolylines = [];
+	};
+
+	var clearDirectionsPanel = function () {
+		jQuery(selector + ' .agm_mh_directions_panel').empty();
+	};
+
+	var getRouteValue = function (value, fallback) {
+		if ( undefined === value || null === value ) {
+			return fallback || '';
+		}
+
+		if ( 'string' === typeof value ) {
+			return value;
+		}
+
+		if ( 'object' === typeof value && undefined !== value.text ) {
+			return value.text;
+		}
+
+		return value.toString ? value.toString() : (fallback || '');
+	};
+
+	var fitRoutePath = function (path) {
+		var bounds;
+
+		if ( ! path || ! path.length ) {
+			return;
+		}
+
+		bounds = new window.google.maps.LatLngBounds();
+		jQuery.each(path, function () {
+			bounds.extend(this);
+		});
+
+		map.fitBounds(bounds);
+	};
+
+	var renderRoutePanel = function (route) {
+		var panel = jQuery(selector + ' .agm_mh_directions_panel');
+
+		clearDirectionsPanel();
+
+		if ( ! route || ! route.legs || ! route.legs.length ) {
+			panel.text( l10nStrings.oops_no_directions );
+			return;
+		}
+
+		jQuery.each(route.legs, function (legIndex, leg) {
+			var legWrap = jQuery('<div class="agm_mh_route_leg"></div>');
+			var legTitle = jQuery('<div class="agm_mh_route_leg_title"></div>');
+			var stepsList = jQuery('<ol class="agm_mh_route_steps"></ol>');
+			var legDistance = getRouteValue(
+				leg.localizedValues && leg.localizedValues.distance,
+				''
+			);
+			var legDuration = getRouteValue(
+				leg.localizedValues && (leg.localizedValues.duration || leg.localizedValues.staticDuration),
+				''
+			);
+
+			legTitle.text('Leg ' + (legIndex + 1) + (legDistance || legDuration ? ': ' + jQuery.trim((legDistance + ' ' + legDuration).replace(/\s+/g, ' ')) : ''));
+			legWrap.append(legTitle);
+
+			jQuery.each(leg.steps || [], function (stepIndex, step) {
+				var item = jQuery('<li class="agm_mh_route_step"></li>');
+				var instruction = getRouteValue(step.instructions, '');
+				var distance = getRouteValue(
+					step.localizedValues && step.localizedValues.distance,
+					''
+				);
+				var duration = getRouteValue(
+					step.localizedValues && (step.localizedValues.duration || step.localizedValues.staticDuration),
+					''
+				);
+				var meta = jQuery.trim((distance + ' ' + duration).replace(/\s+/g, ' '));
+
+				if ( instruction ) {
+					item.append(jQuery('<div class="agm_mh_route_instruction"></div>').text(instruction));
+				}
+
+				if ( meta ) {
+					item.append(jQuery('<div class="agm_mh_route_step_meta"></div>').text(meta));
+				}
+
+				if ( ! instruction && ! meta ) {
+					item.text('Step ' + (stepIndex + 1));
+				}
+
+				stepsList.append(item);
+			});
+
+			legWrap.append(stepsList);
+			panel.append(legWrap);
+		});
+	};
+
+	var renderRouteOnMap = function (route) {
+		clearDirectionsPolylines();
+
+		if ( ! route ) {
+			return;
+		}
+
+		directionsPolylines = route.createPolylines() || [];
+		jQuery.each(directionsPolylines, function () {
+			this.setMap(map);
+		});
+
+		fitRoutePath(route.path || []);
+	};
+
+	var ensureLegacyDirectionsObjects = function () {
+		if ( ! directionsDisplay ) {
+			directionsDisplay = new window.google.maps.DirectionsRenderer({
+				"draggable": true
+			});
+			directionsDisplay.setMap(map);
+		}
+
+		if ( ! directionsService ) {
+			directionsService = new window.google.maps.DirectionsService();
+		}
+	};
+
+	var getRouteRequest = function (origin, destination, unitSystem, routeMode) {
+		var request = {
+			origin: origin,
+			destination: destination,
+			travelMode: routeMode,
+			fields: ['legs', 'path']
+		};
+
+		if ( undefined !== unitSystem && null !== unitSystem ) {
+			request.units = unitSystem;
+		}
+
+		return request;
+	};
+
+	var requestLegacyDirections = function (request, onSuccess, onError) {
+		ensureLegacyDirectionsObjects();
+		directionsService.route(
+			{
+				origin: request.origin,
+				destination: request.destination,
+				unitSystem: request.units,
+				travelMode: request.travelMode
+			},
+			function (result, status) {
+				if (status === window.google.maps.DirectionsStatus.OK) {
+					onSuccess(result);
+				} else if ( typeof onError === 'function' ) {
+					onError(status);
+				}
+			}
+		);
+	};
+
+	var requestRenderedRoute = function (request, onSuccess, onError) {
+		if ( ! canUseRoutesApi() ) {
+			requestLegacyDirections(
+				request,
+				function (legacyResult) {
+					onSuccess({ type: 'legacy', result: legacyResult });
+				},
+				onError
+			);
+			return;
+		}
+
+		window.google.maps.routes.Route.computeRoutes(request)
+			.then(function (response) {
+				if ( response && response.routes && response.routes.length ) {
+					onSuccess({ type: 'routes', result: response.routes[0] });
+					return;
+				}
+
+				if ( typeof onError === 'function' ) {
+					onError('NO_ROUTES');
+				}
+			})
+			.catch(function () {
+				requestLegacyDirections(
+					request,
+					function (legacyResult) {
+						onSuccess({ type: 'legacy', result: legacyResult });
+					},
+					onError
+				);
+			});
 	};
 
 	var createDirectionsMarkup = function () {
@@ -83,13 +445,13 @@ window.AgmMapHandler = function (selector, data) {
 			jQuery(this).attr('src', jQuery(this).attr('src').replace(/_on\./, '_off.'));
 		});
 		if (meImg.attr('src').match(/car_off\.png/)) {
-			travelType = window.google.maps.DirectionsTravelMode.DRIVING;
+			travelType = 'DRIVING';
 		} else if (meImg.attr('src').match(/bike_off\.png/)) {
-			travelType = window.google.maps.DirectionsTravelMode.BICYCLING;
+			travelType = 'BICYCLING';
 		} else if (meImg.attr('src').match(/walk_off\.png/)) {
-			travelType = window.google.maps.DirectionsTravelMode.WALKING;
+			travelType = 'WALKING';
 		} else if (meImg.attr('src').match(/bus_off\.png/)) {
-			travelType = window.google.maps.DirectionsTravelMode.TRANSIT;
+			travelType = 'TRANSIT';
 		}
 		meImg.attr('src', meImg.attr('src').replace(/_off\./, '_on.'));
 		return false;
@@ -150,20 +512,30 @@ window.AgmMapHandler = function (selector, data) {
 		}
 
 		var request = {
-			"origin": loc_a,
-			"destination": loc_b,
-			"unitSystem": unit_system,
-			"travelMode": travelType
+			origin: loc_a,
+			destination: loc_b,
+			units: unit_system,
+			travelMode: travelType
 		};
 
-		directionsDisplay.setPanel(jQuery(selector + ' .agm_mh_directions_panel').get(0));
-		directionsService.route(request, function(result, status) {
-			if (status === window.google.maps.DirectionsStatus.OK) {
-				directionsDisplay.setDirections(result);
-			} else {
+		requestRenderedRoute(
+			request,
+			function (response) {
+				if ( 'routes' === response.type ) {
+					renderRouteOnMap(response.result);
+					renderRoutePanel(response.result);
+					return;
+				}
+
+				ensureLegacyDirectionsObjects();
+				clearDirectionsPolylines();
+				directionsDisplay.setPanel(jQuery(selector + ' .agm_mh_directions_panel').get(0));
+				directionsDisplay.setDirections(response.result);
+			},
+			function () {
 				window.alert( l10nStrings.oops_no_directions );
 			}
-		});
+		);
 		return false;
 	};
 
@@ -175,21 +547,27 @@ window.AgmMapHandler = function (selector, data) {
 				old = mark;
 				return true; // Skip if no previous marker
 			}
-			var request = {
-				"origin": old.getPosition(),
-				"destination": mark.getPosition(),
-				"travelMode": window.google.maps.DirectionsTravelMode.DRIVING
-			};
-			var dir_rend = new window.google.maps.DirectionsRenderer({
-				"draggable": true
-			});
-			var dir_serv = new window.google.maps.DirectionsService();
-			dir_rend.setMap(map);
-			dir_serv.route(request, function(result, status) {
-				if (status === window.google.maps.DirectionsStatus.OK) {
-					dir_rend.setDirections(result);
-				}
-			});
+			requestRenderedRoute(
+				getRouteRequest(old.getPosition(), mark.getPosition(), null, 'DRIVING'),
+				function (response) {
+					if ( 'routes' === response.type ) {
+						var polylines = response.result.createPolylines() || [];
+						jQuery.each(polylines, function () {
+							this.setMap(map);
+							directionsPolylines.push(this);
+						});
+						return;
+					}
+
+					var dir_rend = new window.google.maps.DirectionsRenderer({
+						"draggable": true,
+						"suppressMarkers": true
+					});
+					dir_rend.setMap(map);
+					dir_rend.setDirections(response.result);
+				},
+				function () {}
+			);
 			old = mark;
 		});
 	};
@@ -211,13 +589,13 @@ window.AgmMapHandler = function (selector, data) {
 
 		map.setCenter(pos);
 
-		var marker = new window.google.maps.Marker({
+		var marker = window._agmCreateMapMarker({
 			title: title,
             map: map,
             icon: icon,
             draggable: false,
             clickable: true,
-            position: pos
+			position: pos
         });
 		var infoContent = '<div class="agm_mh_info_content">' +
 			'<div class="agm_mh_info_title">' + title + '</div>' +
@@ -230,14 +608,14 @@ window.AgmMapHandler = function (selector, data) {
 			content: infoContent
 		});
 
-		window.google.maps.event.addListener(marker, 'click', function() {
+		marker.addListener('click', function() {
 			marker.show_info = true;
 
 			jQuery(document).trigger("agm_google_maps-user-marker_click", [idx, title, body, marker, map]); // old style
 			jQuery(document).trigger("agm:marker_click", [idx, title, body, marker, map]);
 
 			if ( marker.show_info === true ) {
-				info.open(map, marker);
+				window._agmOpenInfoWindow(info, map, marker);
 			}
 		});
 
@@ -596,23 +974,26 @@ window.AgmMapHandler = function (selector, data) {
 			});
 		}
 
+		var mapOptions = {
+			"zoom": parseInt(data.zoom, 10) ? parseInt(data.zoom, 10) : 1,
+			"minZoom": 1,
+			"center": new window.google.maps.LatLng(40.7171, -74.0039), // New York
+			"mapTypeId": window.google.maps.MapTypeId[data.map_type]
+		};
+		var resolvedMapId = getResolvedMapId();
+
+		if ( resolvedMapId ) {
+			mapOptions.mapId = resolvedMapId;
+		}
+
 		map = new window.google.maps.Map(
 			jQuery('#' + mapId).get(0),
-			{
-				"zoom": parseInt(data.zoom, 10) ? parseInt(data.zoom, 10) : 1,
-				"minZoom": 1,
-				"center": new window.google.maps.LatLng(40.7171, -74.0039), // New York
-				"mapTypeId": window.google.maps.MapTypeId[data.map_type]
-			}
+			mapOptions
 		);
+		map.__agmSupportsAdvancedMarkers = !!resolvedMapId;
+		map.__agmMapId = resolvedMapId;
 
-		directionsDisplay = new window.google.maps.DirectionsRenderer({
-			"draggable": true
-		});
-
-		directionsService = new window.google.maps.DirectionsService();
-		directionsDisplay.setMap(map);
-		travelType = window.google.maps.DirectionsTravelMode.DRIVING;
+		travelType = 'DRIVING';
 
 		container.append(
 			'<div id="agm_mh_footer" class="agm_mh_footer">' +

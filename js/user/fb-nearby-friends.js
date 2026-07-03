@@ -94,7 +94,7 @@ jQuery(function () {
 		);
 	}
 
-	jQuery(document).bind(
+	jQuery(document).on(
 		"agm_google_maps-user-adding_marker",
 		function (e, marker, idx, map) {
 			var friends = jQuery("<a href='#nearby-friends'>Nearby friends</a>"),

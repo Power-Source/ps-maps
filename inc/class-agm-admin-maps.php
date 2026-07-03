@@ -273,6 +273,7 @@ class AgmAdminMaps {
 			'root_url' => AGM_PLUGIN_URL,
 			'is_multisite' => (int)is_multisite(),
 			'libraries' => array(),
+			'map_id' => !empty($opt['map_id']) ? $opt['map_id'] : '',
 			'maps_api_key' => !empty($opt['map_api_key']) ? $opt['map_api_key'] : '',
 			'nonce' => wp_create_nonce( 'agm_google_maps' ),
 		);

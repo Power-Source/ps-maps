@@ -8,7 +8,7 @@
 
 jQuery(function () {
 
-	jQuery( document ).bind(
+	jQuery( document ).on(
 		"agm_google_maps-user-map_initialized",
 		function(e, map, data) {
 			var has_scroll = false;
