@@ -1,6 +1,6 @@
-/*! WPMU Dev code library - v2.0.3
+/*! PSOURCE code library - v2.0.3
  * https://psource.eimen.net/
- * Copyright (c) 2016; * Licensed GPLv2+ */
+ * Copyright (c) 2026; * Licensed GPLv2+ */
 /*!
  * UI Pattern: Vertical navigation.
  * Version: 1.0.0

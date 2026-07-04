@@ -1,12 +1,12 @@
-/*! WPMU Dev code library - v2.0.3
+/*! PSOURCE code library - v2.0.3
  * https://psource.eimen.net/
- * Copyright (c) 2016; * Licensed GPLv2+ */
+ * Copyright (c) 2026; * Licensed GPLv2+ */
 /*!
- * WPMU Dev Card List
- * (DerN3rd for WPMU Dev)
+ * PSOURCE Card List
+ * (DerN3rd for PSOURCE)
  *
  * @since    1.1.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */

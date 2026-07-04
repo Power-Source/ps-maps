@@ -1,14 +1,14 @@
-/*! WPMU Dev code library - v2.0.3
+/*! PSOURCE code library - v2.0.3
  * https://psource.eimen.net/
- * Copyright (c) 2016; * Licensed GPLv2+ */
+ * Copyright (c) 2026; * Licensed GPLv2+ */
 /*!
- * WPMU Dev UI library
- * (DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (DerN3rd for PSOURCE)
  *
  * This library provides a Javascript API via the global wpmUi object.
  *
  * @version  1.0.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @link     http://appendto.com/2010/10/how-good-c-habits-can-encourage-bad-javascript-habits-part-1/
  * @requires jQuery
  */
@@ -786,14 +786,14 @@
 
 
 /*!
- * WPMU Dev UI library
- * (DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (DerN3rd for PSOURCE)
  *
  * This module provides the WpmUiWindow object which is a smart and easy to use
  * Pop-up.
  *
  * @version  3.0.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */
@@ -2175,14 +2175,14 @@
 
 }( window.wpmUi = window.wpmUi || {} ));
 /*!
- * WPMU Dev UI library
- * (DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (DerN3rd for PSOURCE)
  *
  * This module provides the WpmUiProgress object which is a smart and easy to use
  * Pop-up.
  *
  * @version  2.0.2
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */
@@ -2407,8 +2407,8 @@
 
 }( window.wpmUi = window.wpmUi || {} ));
 /*!
- * WPMU Dev UI library
- * (Rheinard Korf, DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (Rheinard Korf, DerN3rd for PSOURCE)
  *
  * This module adds a WordPress-like hook system in javascript that makes it
  * easier to expose actions/filters to other developers.
@@ -2430,7 +2430,7 @@
  * ----------------------------------------------------------------------------
  *
  * @version  3.0.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */
@@ -2618,15 +2618,15 @@
 
 }( window.wpmUi = window.wpmUi || {} ));
 /*!
- * WPMU Dev UI library
- * (DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (DerN3rd for PSOURCE)
  *
  * This module provides the WpmUiAjaxData object that is used to serialize whole
  * forms and submit then via Ajax. Even file uploads are possibly with this
  * object.
  *
  * @version  1.0.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */
@@ -3251,14 +3251,14 @@
 
 }( window.wpmUi = window.wpmUi || {} ));
 /*!
- * WPMU Dev UI library
- * (DerN3rd for WPMU Dev)
+ * PSOURCE UI library
+ * (DerN3rd for PSOURCE)
  *
  * This module provides the WpmUiBinary object that is used to
  * serialize/deserialize data in base64.
  *
  * @version  1.0.0
- * @author   DerN3rd for WPMU Dev
+ * @author   DerN3rd for PSOURCE
  * @requires jQuery
  */
 /*global jQuery:false */

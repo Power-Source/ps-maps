@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WPMU Dev code library
+ * Plugin Name: PSOURCE code library
  * Plugin URI:  https://psource.eimen.net/
  * Description: Framework to support creating WordPress plugins and themes.
  * Version:     3.0.0

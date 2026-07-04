@@ -1,4 +1,4 @@
-Plugin Name: WPMU Dev code library
+Plugin Name: PSOURCE code library
 Author:      DerN3rd
 
 Change Log:
