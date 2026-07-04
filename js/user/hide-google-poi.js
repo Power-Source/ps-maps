@@ -14,6 +14,11 @@ jQuery(document).on('agm_google_maps-user-map_initialized', function (e, map) {
 	var options = _agm.hide_google_poi;
 	var mapOptions = {};
 	var styles = [];
+	var hasMapId = !!(
+		map.__agmMapId ||
+		( map.get && map.get('mapId') ) ||
+		map.mapId
+	);
 
 	if ( options.disable_clickable_icons ) {
 		mapOptions.clickableIcons = false;
@@ -38,7 +43,7 @@ jQuery(document).on('agm_google_maps-user-map_initialized', function (e, map) {
 		});
 	}
 
-	if ( styles.length ) {
+	if ( styles.length && ! hasMapId ) {
 		mapOptions.styles = styles;
 	}
 
@@ -48,6 +53,7 @@ jQuery(document).on('agm_google_maps-user-map_initialized', function (e, map) {
 		// Fallback: For some mapId/vector setups, local styles can be ignored.
 		// A styled map type restores style control at runtime on roadmap maps.
 		if (
+			! hasMapId &&
 			styles.length &&
 			window.google && window.google.maps && window.google.maps.StyledMapType &&
 			map.mapTypes && map.mapTypes.set &&

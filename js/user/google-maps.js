@@ -75,6 +75,7 @@ var createAdvancedMarkerWrapper = function (options) {
 		position: position,
 		title: options.title || '',
 		content: content || undefined,
+		gmpClickable: options.clickable !== false,
 		gmpDraggable: !!options.draggable,
 		zIndex: options.zIndex
 	});
@@ -105,10 +106,6 @@ var createAdvancedMarkerWrapper = function (options) {
 
 		for ( var i = 0; i < targets.length; i += 1 ) {
 			targets[i].addEventListener('gmp-click', listener.wrapped);
-
-			if ( markerView.element && targets[i] === markerView.element ) {
-				targets[i].addEventListener('click', listener.wrapped);
-			}
 		}
 
 		listener.targets = targets;
@@ -231,9 +228,6 @@ var createAdvancedMarkerWrapper = function (options) {
 						for ( var j = 0; j < clickListener.targets.length; j += 1 ) {
 							if ( clickListener.targets[j] && clickListener.targets[j].removeEventListener ) {
 								clickListener.targets[j].removeEventListener('gmp-click', clickListener.wrapped);
-								if ( markerView.element && clickListener.targets[j] === markerView.element ) {
-									clickListener.targets[j].removeEventListener('click', clickListener.wrapped);
-								}
 							}
 						}
 						clickListener.targets = [];
@@ -312,10 +306,21 @@ window.AgmMapHandler = function (selector, data) {
 	};
 
 	var getResolvedMapId = function () {
+		if (
+			_agm.hide_google_poi &&
+			(
+				_agm.hide_google_poi.hide_poi ||
+				_agm.hide_google_poi.hide_business_labels ||
+				_agm.hide_google_poi.hide_transit
+			)
+		) {
+			return null;
+		}
+
 		if ( data.map_id ) { return data.map_id; }
 		if ( data.defaults && data.defaults.map_id ) { return data.defaults.map_id; }
 		if ( _agm.map_id ) { return _agm.map_id; }
-		return 'DEMO_MAP_ID';
+		return null;
 	};
 
 	var clearDirectionsPolylines = function () {
@@ -1102,7 +1107,12 @@ window.AgmMapHandler = function (selector, data) {
 			jQuery('#' + mapId).get(0),
 			mapOptions
 		);
-		map.__agmSupportsAdvancedMarkers = !!resolvedMapId;
+		map.__agmSupportsAdvancedMarkers = !!resolvedMapId && !!(
+			window.google &&
+			window.google.maps &&
+			window.google.maps.marker &&
+			window.google.maps.marker.AdvancedMarkerElement
+		);
 		map.__agmMapId = resolvedMapId;
 
 		travelType = 'DRIVING';
