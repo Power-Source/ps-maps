@@ -764,6 +764,7 @@ MarkerClusterer.prototype.addToClosestCluster_ = function(marker) {
   var distance = 40000; // Some large number
   var clusterToAddTo = null;
   var pos = marker.getPosition();
+  var clusterCenter = null;
   for (var i = 0, cluster; cluster = this.clusters_[i]; i++) {
     var center = cluster.getCenter();
     if (center) {
@@ -771,11 +772,45 @@ MarkerClusterer.prototype.addToClosestCluster_ = function(marker) {
       if (d < distance) {
         distance = d;
         clusterToAddTo = cluster;
+        clusterCenter = center;
       }
     }
   }
 
-  if (clusterToAddTo && clusterToAddTo.isMarkerInClusterBounds(marker)) {
+  var isInDistance = true;
+  var isInPixelRange = true;
+  var isClearlyOverlapping = false;
+
+  if (clusterToAddTo && clusterCenter) {
+    var zoom = this.map_ && this.map_.getZoom ? this.map_.getZoom() : null;
+    var lat = clusterCenter.lat ? clusterCenter.lat() : null;
+
+    if (null !== zoom && !isNaN(zoom) && null !== lat && !isNaN(lat)) {
+      // Approximate meters-per-pixel at cluster latitude and current zoom.
+      var metersPerPixel = 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
+      var maxDistanceKm = (this.gridSize_ * metersPerPixel) / 1000;
+      isInDistance = distance <= maxDistanceKm;
+
+      // Force clustering for markers that are very near each other.
+      isClearlyOverlapping = distance <= 0.03;
+    }
+
+    if (this.getProjection) {
+      var projection = this.getProjection();
+      if (projection && projection.fromLatLngToDivPixel) {
+        var centerPixel = projection.fromLatLngToDivPixel(clusterCenter);
+        var markerPixel = projection.fromLatLngToDivPixel(pos);
+        if (centerPixel && markerPixel) {
+          var dx = Math.abs(centerPixel.x - markerPixel.x);
+          var dy = Math.abs(centerPixel.y - markerPixel.y);
+          var overlapPixels = Math.max(this.gridSize_, 32);
+          isInPixelRange = dx <= overlapPixels && dy <= overlapPixels;
+        }
+      }
+    }
+  }
+
+  if (clusterToAddTo && (isClearlyOverlapping || (isInDistance && isInPixelRange && clusterToAddTo.isMarkerInClusterBounds(marker)))) {
     clusterToAddTo.addMarker(marker);
   } else {
     var cluster = new Cluster(this);
@@ -799,7 +834,7 @@ MarkerClusterer.prototype.createClusters_ = function() {
   // Create a new bounds object so we don't affect the map.
   var mapBounds = new google.maps.LatLngBounds(this.map_.getBounds().getSouthWest(),
       this.map_.getBounds().getNorthEast());
-  var bounds = this.getExtendedBounds(mapBounds);
+  var bounds = mapBounds;
 
   for (var i = 0, marker; marker = this.markers_[i]; i++) {
     if (!marker.isAdded && this.isMarkerInBounds_(marker, bounds)) {
@@ -915,8 +950,16 @@ Cluster.prototype.getMarkerClusterer = function() {
  * @return {google.maps.LatLngBounds} the cluster bounds.
  */
 Cluster.prototype.getBounds = function() {
-  var bounds = new google.maps.LatLngBounds(this.center_, this.center_);
-  var markers = this.getMarkers();
+  var markers = this.getMarkers() || [];
+  var firstMarker = markers.length ? markers[0] : null;
+  var center = this.center_ || (firstMarker ? firstMarker.getPosition() : null);
+
+  if (!center) {
+    // Fallback bounds for transient empty clusters.
+    return new google.maps.LatLngBounds();
+  }
+
+  var bounds = new google.maps.LatLngBounds(center, center);
   for (var i = 0, marker; marker = markers[i]; i++) {
     bounds.extend(marker.getPosition());
   }
@@ -929,8 +972,9 @@ Cluster.prototype.getBounds = function() {
  */
 Cluster.prototype.remove = function() {
   this.clusterIcon_.remove();
-  this.markers_.length = 0;
-  delete this.markers_;
+  this.markers_ = [];
+  this.center_ = null;
+  this.bounds_ = null;
 };
 
 
@@ -940,7 +984,7 @@ Cluster.prototype.remove = function() {
  * @return {number} The number of markers in the cluster.
  */
 Cluster.prototype.getSize = function() {
-  return this.markers_.length;
+  return this.markers_ ? this.markers_.length : 0;
 };
 
 
@@ -950,7 +994,7 @@ Cluster.prototype.getSize = function() {
  * @return {Array.<google.maps.Marker>} The markers in the cluster.
  */
 Cluster.prototype.getMarkers = function() {
-  return this.markers_;
+  return this.markers_ || [];
 };
 
 
@@ -1002,8 +1046,27 @@ Cluster.prototype.getMap = function() {
 Cluster.prototype.updateIcon = function() {
   var zoom = this.map_.getZoom();
   var mz = this.markerClusterer_.getMaxZoom();
+  var bounds = this.map_.getBounds ? this.map_.getBounds() : null;
+  var visibleMarkers = [];
 
-  if (mz && zoom > mz) {
+  if (bounds) {
+    for (var vi = 0, vm; vm = this.markers_[vi]; vi++) {
+      if (bounds.contains(vm.getPosition())) {
+        visibleMarkers.push(vm);
+      }
+    }
+  }
+
+  if (bounds && visibleMarkers.length <= 1) {
+    this.clusterIcon_.hide();
+    if (visibleMarkers.length === 1) {
+      visibleMarkers[0].setMap(this.map_);
+    }
+    return;
+  }
+
+  if (mz && zoom >= mz) {
+    this.clusterIcon_.hide();
     // The zoom is greater than our max zoom so show all the markers in cluster.
     for (var i = 0, marker; marker = this.markers_[i]; i++) {
       marker.setMap(this.map_);
@@ -1063,14 +1126,65 @@ function ClusterIcon(cluster, styles, opt_padding) {
  */
 ClusterIcon.prototype.triggerClusterClick = function() {
   var markerClusterer = this.cluster_.getMarkerClusterer();
+  var markers = this.cluster_.getMarkers();
 
   // Trigger the clusterclick event.
   google.maps.event.trigger(markerClusterer, 'clusterclick', this.cluster_);
 
+  if (!markers || !markers.length) {
+    this.hide();
+    return;
+  }
+
   if (markerClusterer.isZoomOnClick()) {
     // Zoom into the cluster.
-    this.map_.fitBounds(this.cluster_.getBounds());
-  }
+    var bounds = this.cluster_.getBounds();
+    var maxZoom = markerClusterer.getMaxZoom();
+    var center = this.cluster_.getCenter ? this.cluster_.getCenter() : null;
+    var isPointBounds = false;
+
+    if (bounds && !bounds.isEmpty() && bounds.getSouthWest && bounds.getNorthEast) {
+      var sw = bounds.getSouthWest();
+      var ne = bounds.getNorthEast();
+      if (sw && ne && sw.equals && sw.equals(ne)) {
+        isPointBounds = true;
+      }
+    }
+
+    // Hide immediately so the stale icon does not intercept the next click.
+    this.hide();
+
+    if (bounds && !bounds.isEmpty() && !isPointBounds) {
+      this.map_.fitBounds(bounds);
+    } else {
+      if (center && this.map_.panTo) {
+        this.map_.panTo(center);
+      }
+
+      if (this.map_.setZoom && this.map_.getZoom) {
+        var currentZoom = this.map_.getZoom();
+        var targetZoom = currentZoom;
+
+        if (null !== maxZoom && undefined !== maxZoom && !isNaN(maxZoom)) {
+          targetZoom = maxZoom;
+        } else if (null !== currentZoom && !isNaN(currentZoom)) {
+          targetZoom = currentZoom + 2;
+        }
+
+        if (null !== targetZoom && !isNaN(targetZoom)) {
+          this.map_.setZoom(targetZoom);
+        }
+      }
+    }
+
+    window.setTimeout(function () {
+      if (markerClusterer && markerClusterer.repaint) {
+        markerClusterer.repaint();
+      }
+    }, 60);
+  } else {
+    this.hide();
+    }
 };
 
 
@@ -1090,7 +1204,13 @@ ClusterIcon.prototype.onAdd = function() {
   panes.overlayMouseTarget.appendChild(this.div_);
 
   var that = this;
-  this.div_.addEventListener('click', function() {
+  this.div_.addEventListener('click', function(event) {
+    if (event && event.preventDefault) {
+      event.preventDefault();
+    }
+    if (event && event.stopPropagation) {
+      event.stopPropagation();
+    }
     that.triggerClusterClick();
   });
 };
@@ -1130,6 +1250,7 @@ ClusterIcon.prototype.draw = function() {
 ClusterIcon.prototype.hide = function() {
   if (this.div_) {
     this.div_.style.display = 'none';
+    this.div_.style.pointerEvents = 'none';
   }
   this.visible_ = false;
 };
@@ -1143,6 +1264,7 @@ ClusterIcon.prototype.show = function() {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.cssText = this.createCss(pos);
     this.div_.style.display = '';
+    this.div_.style.pointerEvents = '';
   }
   this.visible_ = true;
 };

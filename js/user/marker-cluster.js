@@ -22,12 +22,14 @@ function getClusterOptions(map, data) {
 	var maxZoom = configuredMaxZoom;
 
 	if ( null === maxZoom ) {
-		maxZoom = null !== mapTypeMaxZoom ? Math.max(1, mapTypeMaxZoom - 3) : 15;
+		maxZoom = null !== mapTypeMaxZoom ? Math.max(1, mapTypeMaxZoom - 3) : 18;
 	}
 
+	maxZoom = Math.max(1, Math.min(maxZoom, 21));
+
 	return {
-		zoomOnClick: false,
-		gridSize: null !== configuredGridSize ? Math.max(10, configuredGridSize) : 20,
+		zoomOnClick: true,
+		gridSize: null !== configuredGridSize ? Math.max(6, configuredGridSize) : 10,
 		maxZoom: maxZoom,
 		minimumClusterSize: 2,
 		imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
@@ -36,29 +38,17 @@ function getClusterOptions(map, data) {
 
 jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, data, markers) {
 	if ( ! markers || ! markers.length ) { return; }
-	var markerCluster = new window.MarkerClusterer(
+	if ( markers.length < 2 ) { return; }
+
+	if ( map && map._agmMarkerCluster && map._agmMarkerCluster.clearMarkers ) {
+		map._agmMarkerCluster.clearMarkers();
+	}
+
+	map._agmMarkerCluster = new window.MarkerClusterer(
 		map,
 		markers,
 		getClusterOptions(map, data)
 	);
-
-	window.google.maps.event.addListener(markerCluster, "clusterclick", function (c) {
-		var clustered = c.getMarkers();
-		var contents = '';
-
-		jQuery.each(clustered, function () {
-			if ( '_agmInfo' in this ) {
-				contents += this._agmInfo.getContent();
-				contents += "<hr style='clear:both' />";
-			}
-		});
-
-		var info = new window.google.maps.InfoWindow({
-			content: contents
-		});
-
-		window._agmOpenInfoWindow(info, map, clustered[0]);
-	});
 });
 
 });

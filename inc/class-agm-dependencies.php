@@ -300,7 +300,32 @@ if ( defined( 'AGM_OPTMIZIE_SCRIPT_LOAD' ) && AGM_OPTMIZIE_SCRIPT_LOAD ) {
 		private function _get_request_key() {
 			global $wp;
 			$url = home_url( $wp->request ); // Use simplified baseurl fetching
-			return 'agm-js-' . md5( $url );
+			return 'agm-js-' . md5( $url . '|' . $this->_get_assets_signature() );
+		}
+
+		/**
+		 * Generates a simple signature from frequently changing frontend assets.
+		 * This invalidates optimized JS cache when relevant source files change.
+		 *
+		 * @return string
+		 */
+		private function _get_assets_signature() {
+			$files = array(
+				AGM_BASE_DIR . 'js/loader.js',
+				AGM_BASE_DIR . 'js/user/google-maps.js',
+				AGM_BASE_DIR . 'js/user/marker-cluster.js',
+				AGM_BASE_DIR . 'js/user/places.js',
+				AGM_BASE_DIR . 'js/external/markerclusterer_packed.js',
+			);
+
+			$parts = array();
+			foreach ( $files as $file ) {
+				if ( file_exists( $file ) ) {
+					$parts[] = basename( $file ) . ':' . filemtime( $file );
+				}
+			}
+
+			return md5( join( '|', $parts ) );
 		}
 
 		private function _endpoint_has_optimized_scripts() {

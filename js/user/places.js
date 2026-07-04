@@ -12,22 +12,51 @@ jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, da
 	function initialize_all_markers_places (map, show, distance, types) {
 		var show_places = show,
 			places_radius = distance,
-			place_types = types;
+			place_types = types,
+			max_origins = data && data.places_max_origins ? parseInt(data.places_max_origins, 10) : 10;
 
 		if ( ! show_places ) { return false; }
+		if ( isNaN(max_origins) || max_origins < 1 ) { max_origins = 10; }
 
 		var service = new window.google.maps.places.PlacesService( map ),
 			markers = map._agm_get_markers(),
+			bounds = map.getBounds ? map.getBounds() : null,
+			cache = map._agmPlacesCache || {},
+			processed = 0,
 			request = {
 				"radius": places_radius
 			};
 
+		map._agmPlacesCache = cache;
+
 		if ( place_types ) { request.types = place_types; }
 
 		jQuery.each(markers, function () {
+			if ( processed >= max_origins ) { return false; }
+
 			var marker = this;
+			if ( bounds && ! bounds.contains(marker.getPosition()) ) {
+				return true;
+			}
+
 			request.location = marker.getPosition();
+			processed += 1;
+
+			var point = marker.getPosition();
+			var cache_key = [
+				point.lat().toFixed(4),
+				point.lng().toFixed(4),
+				places_radius,
+				(place_types || []).join('|')
+			].join(':');
+
+			if ( cache[cache_key] ) {
+				update_marker_places(map, marker, cache[cache_key]);
+				return true;
+			}
+
 			service.search(request, function (response) {
+				cache[cache_key] = response || [];
 				update_marker_places(map, marker, response);
 			});
 		});

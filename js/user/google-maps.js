@@ -79,6 +79,70 @@ var createAdvancedMarkerWrapper = function (options) {
 		zIndex: options.zIndex
 	});
 	var visible = true;
+	var advancedClickListeners = [];
+
+	var getAdvancedClickTargets = function () {
+		var targets = [];
+
+		if ( markerView.addEventListener ) {
+			targets.push(markerView);
+		}
+
+		if ( markerView.element && markerView.element.addEventListener ) {
+			if ( -1 === targets.indexOf(markerView.element) ) {
+				targets.push(markerView.element);
+			}
+		}
+
+		return targets;
+	};
+
+	var bindAdvancedClickListener = function (listener) {
+		var targets = getAdvancedClickTargets();
+		if ( ! targets.length ) {
+			return false;
+		}
+
+		for ( var i = 0; i < targets.length; i += 1 ) {
+			targets[i].addEventListener('gmp-click', listener.wrapped);
+
+			if ( markerView.element && targets[i] === markerView.element ) {
+				targets[i].addEventListener('click', listener.wrapped);
+			}
+		}
+
+		listener.targets = targets;
+		return true;
+	};
+
+	var rebindAdvancedClickListeners = function (retry) {
+		retry = retry || 0;
+
+		if ( ! advancedClickListeners.length ) {
+			return;
+		}
+
+		if ( ! getAdvancedClickTargets().length ) {
+			if ( retry < 5 ) {
+				window.setTimeout(function () {
+					rebindAdvancedClickListeners(retry + 1);
+				}, 40);
+			}
+			return;
+		}
+
+		for ( var i = 0; i < advancedClickListeners.length; i += 1 ) {
+			var listener = advancedClickListeners[i];
+			for ( var j = 0; j < (listener.targets || []).length; j += 1 ) {
+				if ( listener.targets[j] && listener.targets[j].removeEventListener ) {
+					listener.targets[j].removeEventListener('gmp-click', listener.wrapped);
+				}
+			}
+			listener.targets = [];
+			bindAdvancedClickListener(listener);
+		}
+	};
+
 	var wrapper = {
 		_agmAdvancedMarker: markerView,
 		_agmMarkerContent: content,
@@ -96,6 +160,7 @@ var createAdvancedMarkerWrapper = function (options) {
 		},
 		setMap: function (map) {
 			markerView.map = map || null;
+			rebindAdvancedClickListeners();
 		},
 		getTitle: function () {
 			return markerView.title || '';
@@ -134,23 +199,50 @@ var createAdvancedMarkerWrapper = function (options) {
 		},
 		addListener: function (eventName, handler) {
 			if ( 'click' === eventName ) {
-				var eventTarget = markerView.addEventListener ? markerView : markerView.element;
-
-				if ( eventTarget && eventTarget.addEventListener ) {
-					var advancedClickHandler = function (event) {
+				var clickListener = {
+					targets: [],
+					lastTriggerAt: 0,
+					wrapped: function (event) {
+						var now = Date.now();
+						if ( now - clickListener.lastTriggerAt < 25 ) {
+							return;
+						}
+						clickListener.lastTriggerAt = now;
 						handler(event);
-					};
+					}
+				};
+				var fallbackHandle = null;
 
-					eventTarget.addEventListener('gmp-click', advancedClickHandler);
+				advancedClickListeners.push(clickListener);
 
-					return {
-						remove: function () {
-							if ( eventTarget.removeEventListener ) {
-								eventTarget.removeEventListener('gmp-click', advancedClickHandler);
+				if ( ! bindAdvancedClickListener(clickListener) ) {
+					fallbackHandle = markerView.addListener(eventName, handler);
+				}
+
+				return {
+					remove: function () {
+						for ( var i = advancedClickListeners.length - 1; i >= 0; i -= 1 ) {
+							if ( advancedClickListeners[i] === clickListener ) {
+								advancedClickListeners.splice(i, 1);
+								break;
 							}
 						}
-					};
-				}
+
+						for ( var j = 0; j < clickListener.targets.length; j += 1 ) {
+							if ( clickListener.targets[j] && clickListener.targets[j].removeEventListener ) {
+								clickListener.targets[j].removeEventListener('gmp-click', clickListener.wrapped);
+								if ( markerView.element && clickListener.targets[j] === markerView.element ) {
+									clickListener.targets[j].removeEventListener('click', clickListener.wrapped);
+								}
+							}
+						}
+						clickListener.targets = [];
+
+						if ( fallbackHandle && fallbackHandle.remove ) {
+							fallbackHandle.remove();
+						}
+					}
+				};
 			}
 
 			return markerView.addListener(eventName, handler);
