@@ -3,8 +3,8 @@ Contributors: PSOURCE
 Tags: maps, classicpress,
 Requires at least: 4.9
 Tested up to: WordPress 6.8.1 
-ClassicPress: 2.6.0
-Stable tag: 1.0.1
+ClassicPress: 2.7.0
+Stable tag: 1.0.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -50,6 +50,7 @@ Füge jeder Karte mehrere Markierungen hinzu!
 
 * Bug fix: Shortcode-Attributwerte mit typografischen Anführungszeichen werden jetzt korrekt normalisiert (z.B. query="all").
 * Bug fix: Boolesche Shortcode-Attribute wie show_markers werten jetzt explizite false/no/off-Werte korrekt aus und werden nicht mehr durch leere Wert-Prüfungen übersprungen.
+* Fix: Pointer-Polyfill hinzugefügt: JS/CSS für verbesserte Funktionalität und Styling aktualisiert
 
 = 1.0.1 =
 

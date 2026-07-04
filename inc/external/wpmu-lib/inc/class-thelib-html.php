@@ -155,8 +155,8 @@ class TheLib_Html extends TheLib  {
 	 */
 	public function _enqueue_pointer() {
 		// Load the JS/CSS for WP Pointers
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_style( 'wp-pointer' );
+		wp_enqueue_script( 'psmaps-pointer-polyfill', plugins_url( 'pointer-polyfill.js', __FILE__ ), array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_style( 'psmaps-pointer-polyfill', plugins_url( 'pointer-polyfill.css', __FILE__ ), array(), '1.0.0' );
 	}
 
 	/**
