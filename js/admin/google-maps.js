@@ -128,6 +128,20 @@ jQuery(function( ) {
 				return visible;
 			},
 			addListener: function (eventName, handler) {
+				if ( 'click' === eventName && markerView.addEventListener ) {
+					var advancedClickHandler = function (event) {
+						handler(event);
+					};
+
+					markerView.addEventListener('gmp-click', advancedClickHandler);
+
+					return {
+						remove: function () {
+							markerView.removeEventListener('gmp-click', advancedClickHandler);
+						}
+					};
+				}
+
 				return markerView.addListener(eventName, handler);
 			}
 		};

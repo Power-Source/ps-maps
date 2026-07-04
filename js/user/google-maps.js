@@ -133,6 +133,26 @@ var createAdvancedMarkerWrapper = function (options) {
 			return visible;
 		},
 		addListener: function (eventName, handler) {
+			if ( 'click' === eventName ) {
+				var eventTarget = markerView.addEventListener ? markerView : markerView.element;
+
+				if ( eventTarget && eventTarget.addEventListener ) {
+					var advancedClickHandler = function (event) {
+						handler(event);
+					};
+
+					eventTarget.addEventListener('gmp-click', advancedClickHandler);
+
+					return {
+						remove: function () {
+							if ( eventTarget.removeEventListener ) {
+								eventTarget.removeEventListener('gmp-click', advancedClickHandler);
+							}
+						}
+					};
+				}
+			}
+
 			return markerView.addListener(eventName, handler);
 		}
 		};
