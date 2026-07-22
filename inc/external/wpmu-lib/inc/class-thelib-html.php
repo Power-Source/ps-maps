@@ -140,7 +140,6 @@ class TheLib_Html extends TheLib  {
 			// Include all scripts and code to display the pointer!
 			if ( $show ) {
 				$this->add_action( 'admin_print_footer_scripts', '_pointer_print_scripts' );
-				$this->add_action( 'admin_enqueue_scripts', '_enqueue_pointer' );
 
 				$this->_add( 'pointer', $item );
 			}
@@ -148,15 +147,13 @@ class TheLib_Html extends TheLib  {
 	}
 
 	/**
-	 * Enqueue wp-pointer
+	 * Legacy compatibility hook for pointer popups.
 	 *
 	 * @since  1.0.1
 	 * @internal
 	 */
 	public function _enqueue_pointer() {
-		// Load the JS/CSS for WP Pointers
-		wp_enqueue_script( 'psmaps-pointer-polyfill', plugins_url( 'pointer-polyfill.js', __FILE__ ), array( 'jquery' ), '1.0.0', true );
-		wp_enqueue_style( 'psmaps-pointer-polyfill', plugins_url( 'pointer-polyfill.css', __FILE__ ), array(), '1.0.0' );
+		return;
 	}
 
 	/**

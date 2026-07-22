@@ -4,7 +4,7 @@ Tags: maps, classicpress,
 Requires at least: 4.9
 Tested up to: WordPress 6.8.1 
 ClassicPress: 2.7.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -45,6 +45,22 @@ Füge jeder Karte mehrere Markierungen hinzu!
 
 
 == ChangeLog ==
+
+= 1.0.4 =
+
+* Fix: Die Admin-Einstellungen nutzen jetzt wieder die vorgesehenen CSS- und JS-Dateien statt Inline-Skripten.
+* Fix: Die mobile Darstellung der Einstellungsseite wurde entschärft, damit Navigation, Tabellen und Eingabefelder nicht mehr aus dem Layout laufen.
+* Fix: Die benutzerdefinierten Symbole wurden im Admin auf ein scrollbares, übersichtlicheres Tabellenlayout umgestellt.
+* Fix: Responsiv aktivierte Karten skalieren im Frontend jetzt zuverlässig auf die Containerbreite.
+
+= 1.0.3 =
+
+* Fix: Karten-Editor-Icons reagieren im Admin wieder robuster auf Advanced-Marker-Klicks und öffnen den Bearbeitungsmodus zuverlässig.
+* Fix: Die Symbolverwaltung im Admin ist jetzt mobilfreundlicher und nutzt ein scrollbares Tabellenlayout mit gestapelten Aktionen.
+* Fix: Klarere Trennung zwischen mitgelieferten Standardsymbolen und zusätzlichen benutzerdefinierten Symbolen in der Admin-Oberfläche.
+* Fix: Ein JavaScript-Tippfehler (`JQuery.post`) im Karten-Editor wurde behoben, damit die Options-/Zuordnungslogik nicht mehr abbricht.
+* Fix: Der Pointer-Wrapper prüft jetzt sauber auf die vorhandene jQuery-Erweiterung, damit fehlende Pointer-Abhängigkeiten keine Admin-Fehler mehr auslösen.
+* Fix: Der alte wp-pointer-Dialog wurde auf das vorhandene `wpmUi.popup`-System umgestellt und die nicht mehr benötigten Pointer-Polyfills entfernt.
 
 = 1.0.2 =
 

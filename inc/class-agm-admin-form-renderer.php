@@ -99,15 +99,12 @@ class Agm_AdminFormRenderer {
 		$opt = apply_filters( 'agm_google_maps-options', get_option( 'agm_google_maps' ) );
 		$zoom = ! empty( $opt['zoom'] ) && is_numeric( $opt['zoom'] ) ? (int) $opt['zoom'] : 1;
 		$is_advanced = (bool) (empty( $opt['zoom'] ) || ! in_array( $zoom, array_keys( $items ) ) );
-
-		$basic_visibility = $is_advanced ? 'style="display:none"' : '';
 		$basic_disabled = $is_advanced ? 'disabled="disabled"' : '';
-		$advanced_visibility = $is_advanced ? '' : 'style="display:none"';
 		$advanced_disabled = $is_advanced ? '' : 'disabled="disabled"';
 
 		// Basic
 		?>
-		<div id="agm-zoom-basic-container" <?php echo '' . $basic_visibility; ?>>
+		<div id="agm-zoom-basic-container" class="agm-zoom-basic-container<?php echo $is_advanced ? ' is-hidden' : ''; ?>">
 			<select id="zoom" name="agm_google_maps[zoom]" <?php echo '' . $basic_disabled; ?>>
 			<?php foreach ( $items as $item => $label ) : ?>
 				<option value="<?php echo esc_attr( $item ); ?>" <?php selected( $zoom, $item ); ?>>
@@ -125,7 +122,7 @@ class Agm_AdminFormRenderer {
 
 		// Advanced
 		?>
-		<div id="agm-zoom-advanced-container" <?php echo '' . $advanced_visibility; ?>>
+		<div id="agm-zoom-advanced-container" class="agm-zoom-advanced-container<?php echo $is_advanced ? '' : ' is-hidden'; ?>">
 			<input type="text"
 				size="2"
 				name="agm_google_maps[zoom]"
@@ -135,36 +132,6 @@ class Agm_AdminFormRenderer {
 			&nbsp;<a href="#agm-advanced_zoom" id="agm-basic_zoom-toggler"><?php _e( 'Basis-Modus', AGM_LANG ); ?></a>
 			<?php _e( '<div>Bitte geben Sie den numerischen Zoomwert ein.</div>', AGM_LANG ); ?>
 		</div>
-		<?php
-
-		// Toggling JS
-		?>
-		<script type="text/javascript">
-		(function() {
-		jQuery("#agm-advanced_zoom-toggler").on("click", function() {
-			jQuery("#agm-zoom-basic-container")
-				.find("select").attr("disabled", true ).end()
-				.hide()
-			;
-			jQuery("#agm-zoom-advanced-container")
-				.find("#agm-zoom-advanced").attr("disabled", false ).end()
-				.show()
-			;
-			return false;
-		});
-		jQuery("#agm-basic_zoom-toggler").on("click", function() {
-			jQuery("#agm-zoom-advanced-container")
-				.find("#agm-zoom-advanced").attr("disabled", true ).end()
-				.hide()
-			;
-			jQuery("#agm-zoom-basic-container")
-				.find("select").attr("disabled", false ).end()
-				.show()
-			;
-			return false;
-		});
-		})();
-		</script>
 		<?php
 	}
 
@@ -289,32 +256,34 @@ class Agm_AdminFormRenderer {
 		$original = $use ? 'agm_map' : 'map';
 
 		?>
-		<label for="shortcode_map-yes">
-		<input type="radio"
-			name="agm_google_maps[shortcode_map]"
-			class="agm_shortcode_map"
-			id="shortcode_map-yes"
-			value="map"
-			<?php checked( ! $use ); ?> />
-			<code>[map]</code>
-			<?php _e( '(Standard)', AGM_LANG ); ?>
-		</label>
-		&nbsp; | &nbsp;
-		<label for="shortcode_map-no">
-		<input type="radio"
-			name="agm_google_maps[shortcode_map]"
-			class="agm_shortcode_map"
-			id="shortcode_map-no"
-			value="agm_map"
-			<?php checked( $use ); ?> />
-			<code>[agm_map]</code>
-		</label>
-		<p>
+		<div class="agm-shortcode-switch" data-agm-original-shortcode="<?php echo esc_attr( $original ); ?>">
+			<label for="shortcode_map-yes">
+			<input type="radio"
+				name="agm_google_maps[shortcode_map]"
+				class="agm_shortcode_map"
+				id="shortcode_map-yes"
+				value="map"
+				<?php checked( ! $use ); ?> />
+				<code>[map]</code>
+				<?php _e( '(Standard)', AGM_LANG ); ?>
+			</label>
+			&nbsp; | &nbsp;
+			<label for="shortcode_map-no">
+			<input type="radio"
+				name="agm_google_maps[shortcode_map]"
+				class="agm_shortcode_map"
+				id="shortcode_map-no"
+				value="agm_map"
+				<?php checked( $use ); ?> />
+				<code>[agm_map]</code>
+			</label>
+			<p>
 			<?php _e(
 				'Wenn die Karte auf Deiner Seite nicht angezeigt wird, versuche ' .
 				'den alternativen Shortcode <code>[agm_map]</code>.', AGM_LANG
 			); ?>
-			<div class="alt-hint" style="display:none;color: #900;margin: 10px 0px;">
+				</p>
+			<div class="alt-hint is-hidden">
 			<?php _e(
 				'<strong>Tipp:</strong> Nach dem Ändern des Shortcodes verwende ' .
 				'das Add-on "Fixes and repairs" und überprüfe den Status von ' .
@@ -323,16 +292,7 @@ class Agm_AdminFormRenderer {
 				'den neuen Shortcode zu verwenden.', AGM_LANG
 			); ?>
 			</div>
-		</p>
-		<script>
-		jQuery(".agm_shortcode_map").on('click', function() {
-			if ( jQuery(this).val() != "<?php echo esc_js( $original ); ?>") {
-				jQuery(".alt-hint").show();
-			} else {
-				jQuery(".alt-hint").hide();
-			}
-		})
-		</script>
+		</div>
 		<?php
 	}
 
@@ -577,7 +537,7 @@ if ( ! $has_buddypress && 'BuddyPress' == ( $data['requires'] ?? '' ) ) { $can_u
 			<?php endif; ?>
 			</div>
 			</td>
-			<td width="70%" class="column-description desc">
+			<td class="column-description desc">
 				<p>
 				<?php echo '' . $data['desc']; ?>
 				</p>
@@ -594,51 +554,6 @@ if ( ! $has_buddypress && 'BuddyPress' == ( $data['requires'] ?? '' ) ) { $can_u
 		?>
 		</tbody>
 		</table>
-		<script type="text/javascript">
-		(function() {
-			var list = jQuery( '.plugins' ),
-				filters = jQuery( '.subsubsub > a' ),
-				nonce = '<?php echo esc_js( wp_create_nonce( 'agm_google_maps' ) ); ?>';
-
-			jQuery( document ).on( 'click', '.agm_plugin', function(ev) {
-				var me = jQuery( this ),
-					plugin_id = me.attr( 'data-plugin' ),
-					action = me.attr( 'data-action' );
-
-				jQuery.post(
-					ajaxurl,
-					{
-						"action": action,
-						"plugin": plugin_id,
-						"nonce": nonce
-					},
-					function( data ) {
-						// On success reload the window
-						window.location.reload();
-					}
-				);
-				return false;
-			});
-
-			jQuery( '.agm-addons-all' ).on('click', function(){
-				filters.removeClass( 'current' );
-				jQuery( this ).addClass( 'current' );
-				list.find( 'tr.agm-add-on' ).show();
-			});
-			jQuery( '.agm-addons-active' ).on('click', function(){
-				filters.removeClass( 'current' );
-				jQuery( this ).addClass( 'current' );
-				list.find( 'tr.agm-add-on.inactive' ).hide();
-				list.find( 'tr.agm-add-on.active' ).show();
-			});
-			jQuery( '.agm-addons-inactive' ).on('click', function(){
-				filters.removeClass( 'current' );
-				jQuery( this ).addClass( 'current' );
-				list.find( 'tr.agm-add-on.inactive' ).show();
-				list.find( 'tr.agm-add-on.active' ).hide();
-			});
-		})();
-		</script>
 		<?php
 	}
 }

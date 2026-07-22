@@ -16,13 +16,23 @@ jQuery(document).on("agm_google_maps-user-map_initialized", function (e, map, da
 		parent = container.parent(),
 		center = map.getCenter(),
 		total_width = parent.width(),
-		map_width = el.width()
+		map_width = el.width(),
+		width_is_percentage = -1 !== (String( data.width || '' ).indexOf('%'))
 	;
+
+	container.addClass('agm-responsive-map').css({
+		width: '100%',
+		maxWidth: '100%'
+	});
+	el.css({
+		width: '100%',
+		maxWidth: '100%'
+	});
 
 	jQuery(window).on('resize', function () {
 		var width = parent.width();
 
-		if ( data.responsive_respect_width ) {
+		if ( data.responsive_respect_width && width_is_percentage ) {
 			width = (width / total_width) * map_width;
 		}
 

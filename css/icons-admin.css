@@ -14,5 +14,90 @@
   max-height: 32px;
 }
 
+.custom-icon-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.custom-icon-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.custom-icon-preview-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.custom-icon-note {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.custom-icons-table-wrap {
+  overflow-x: auto;
+}
+
+.custom-icons-table {
+  min-width: 640px;
+  width: 100%;
+}
+
+.custom-icons-table th,
+.custom-icons-table td {
+  vertical-align: middle;
+}
+
+.custom-icon-add-form input[type="url"],
+.custom-icon-add-form .add-custom-icon,
+.custom-icon-add-form .add-media-image {
+  max-width: 100%;
+}
+
+.custom-icon-url-input {
+  display: block;
+  width: 100%;
+}
+
+.custom-icon-col-icon {
+  width: 5%;
+}
+
+.custom-icon-col-url {
+  width: 75%;
+}
+
+.custom-icon-col-size {
+  width: 15%;
+}
+
+.custom-icon-col-actions {
+  width: 5%;
+}
+
+@media screen and (max-width: 782px) {
+  .custom-icon-add-form .add-custom-icon,
+  .custom-icon-add-form .add-media-image {
+    width: 100%;
+  }
+
+  .custom-icons-table {
+    min-width: 520px;
+  }
+
+  .custom-icons-table th,
+  .custom-icons-table td {
+    padding: 8px 6px;
+  }
+}
+
 
 /* 403900-1511247429-ai */

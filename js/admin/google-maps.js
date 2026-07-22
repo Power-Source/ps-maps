@@ -71,10 +71,72 @@ jQuery(function( ) {
 			position: position,
 			title: options.title || '',
 			content: content || undefined,
+			gmpClickable: options.clickable !== false,
 			gmpDraggable: !!options.draggable,
 			zIndex: options.zIndex
 		});
 		var visible = true;
+		var advancedClickListeners = [];
+
+		var getAdvancedClickTargets = function () {
+			var targets = [];
+
+			if ( markerView.addEventListener ) {
+				targets.push(markerView);
+			}
+
+			if ( markerView.element && markerView.element.addEventListener ) {
+				if ( -1 === targets.indexOf(markerView.element) ) {
+					targets.push(markerView.element);
+				}
+			}
+
+			return targets;
+		};
+
+		var bindAdvancedClickListener = function (listener) {
+			var targets = getAdvancedClickTargets();
+			if ( ! targets.length ) {
+				return false;
+			}
+
+			for ( var i = 0; i < targets.length; i += 1 ) {
+				targets[i].addEventListener('gmp-click', listener.wrapped);
+			}
+
+			listener.targets = targets;
+			return true;
+		};
+
+		var rebindAdvancedClickListeners = function (retry) {
+			retry = retry || 0;
+
+			if ( ! advancedClickListeners.length ) {
+				return;
+			}
+
+			if ( ! getAdvancedClickTargets().length ) {
+				if ( retry < 5 ) {
+					window.setTimeout(function () {
+						rebindAdvancedClickListeners(retry + 1);
+					}, 40);
+				}
+				return;
+			}
+
+			for ( var i = 0; i < advancedClickListeners.length; i += 1 ) {
+				var listener = advancedClickListeners[i];
+
+				for ( var j = 0; j < (listener.targets || []).length; j += 1 ) {
+					if ( listener.targets[j] && listener.targets[j].removeEventListener ) {
+						listener.targets[j].removeEventListener('gmp-click', listener.wrapped);
+					}
+				}
+
+				listener.targets = [];
+				bindAdvancedClickListener(listener);
+			}
+		};
 		var wrapper = {
 			_agmAdvancedMarker: markerView,
 			_agmMarkerContent: content,
@@ -91,6 +153,7 @@ jQuery(function( ) {
 			},
 			setMap: function (map) {
 				markerView.map = map || null;
+				rebindAdvancedClickListeners();
 			},
 			getTitle: function () {
 				return markerView.title || '';
@@ -128,16 +191,42 @@ jQuery(function( ) {
 				return visible;
 			},
 			addListener: function (eventName, handler) {
-				if ( 'click' === eventName && markerView.addEventListener ) {
-					var advancedClickHandler = function (event) {
+				if ( 'click' === eventName ) {
+					var advancedClickHandler = {
+						targets: [],
+						lastTriggerAt: 0,
+						wrapped: function (event) {
+							var now = Date.now();
+
+							if ( now - advancedClickHandler.lastTriggerAt < 25 ) {
+								return;
+							}
+
+							advancedClickHandler.lastTriggerAt = now;
 						handler(event);
+						}
 					};
 
-					markerView.addEventListener('gmp-click', advancedClickHandler);
+					advancedClickListeners.push(advancedClickHandler);
+					if ( ! bindAdvancedClickListener(advancedClickHandler) ) {
+						rebindAdvancedClickListeners();
+					}
 
 					return {
 						remove: function () {
-							markerView.removeEventListener('gmp-click', advancedClickHandler);
+							for ( var i = advancedClickListeners.length - 1; i >= 0; i -= 1 ) {
+								if ( advancedClickListeners[i] === advancedClickHandler ) {
+									advancedClickListeners.splice(i, 1);
+									break;
+								}
+							}
+
+							for ( var j = 0; j < advancedClickHandler.targets.length; j += 1 ) {
+								if ( advancedClickHandler.targets[j] && advancedClickHandler.targets[j].removeEventListener ) {
+									advancedClickHandler.targets[j].removeEventListener('gmp-click', advancedClickHandler.wrapped);
+								}
+							}
+							advancedClickHandler.targets = [];
 						}
 					};
 				}
@@ -329,7 +418,7 @@ jQuery(function( ) {
 				jQuery('#agm_map_size_associate').attr('checked', false); // Not associated, default to false
 				return false;
 			}
-			JQuery.post(
+			jQuery.post(
 				window.ajaxurl,
 				{
 					"action": "agm_get_post_titles",

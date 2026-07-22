@@ -257,7 +257,14 @@ class AgmAdminMaps {
 			lib3()->ui->add( TheLib_Ui::MODULE_CORE );
 			lib3()->ui->add( TheLib_Ui::MODULE_SELECT );
 		} elseif ( 'settings_page_agm_google_maps' === $base ) {
-			lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.min.css' );
+			lib3()->ui->add( AGM_PLUGIN_URL . 'css/google_maps_admin.css' );
+			lib3()->ui->add( AGM_PLUGIN_URL . 'js/admin/settings.js' );
+			lib3()->ui->data(
+				'_agmSettings',
+				array(
+					'nonce' => wp_create_nonce( 'agm_google_maps' ),
+				)
+			);
 		}
 	}
 

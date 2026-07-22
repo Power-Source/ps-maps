@@ -99,7 +99,7 @@ class Agm_Rmaps_Pages {
 	}
 
 	public function load_scripts() {
-		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/responsive.min.js', 'front' );
+		lib3()->ui->add( AGM_PLUGIN_URL . 'js/user/responsive.js', 'front' );
 	}
 
 	public function register_settings() {

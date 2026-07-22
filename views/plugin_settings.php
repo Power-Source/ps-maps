@@ -12,21 +12,3 @@
 		</p>
 	</form>
 </div>
-
-<script type="text/javascript">
-jQuery(function () {
-	// Set up contextual help inline triggers
-	jQuery("[data-agm_contextual_trigger]").each(function () {
-		var $me = jQuery(this),
-			$target = jQuery($me.attr("data-agm_contextual_trigger"))
-		;
-		if (!$target.length) { return false; }
-		$me.on("click", function () {
-			jQuery("#contextual-help-link").click();
-			$target.find("a").click();
-			jQuery(window).scrollTop(0);
-			return false;
-		});
-	});
-});
-</script>

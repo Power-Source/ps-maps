@@ -83,20 +83,22 @@ class Agm_Icons_AdminPages {
 		$options = get_option( 'agm_google_maps' );
 		$iconlist = @$options['custom_icons'];
 		?>
-		<table class="icons widefat" cellspacing="0" cellpadding="0">
-			<?php foreach ( array( 'thead', 'tfoot' ) as $tag ) : ?>
-			<<?php echo esc_attr( $tag ); ?>>
-				<tr>
-					<th style="width:5%"><?php _e( 'Icon', AGM_LANG ); ?></th>
-					<th style="width:75%"><?php _e( 'URL', AGM_LANG ); ?></th>
-					<th style="width:15%"><?php _e( 'Width x Height', AGM_LANG ); ?></th>
-					<th style="width:5%">&nbsp;</th>
-				</tr>
-			</<?php echo esc_attr( $tag ); ?>>
-			<?php endforeach; ?>
-			<tbody>
-			</tbody>
-		</table>
+		<div class="custom-icons-table-wrap">
+			<table class="icons widefat custom-icons-table" cellspacing="0" cellpadding="0">
+				<?php foreach ( array( 'thead', 'tfoot' ) as $tag ) : ?>
+				<<?php echo esc_attr( $tag ); ?>>
+					<tr>
+						<th class="custom-icon-col-icon"><?php _e( 'Icon', AGM_LANG ); ?></th>
+						<th class="custom-icon-col-url"><?php _e( 'URL', AGM_LANG ); ?></th>
+						<th class="custom-icon-col-size"><?php _e( 'Width x Height', AGM_LANG ); ?></th>
+						<th class="custom-icon-col-actions">&nbsp;</th>
+					</tr>
+				</<?php echo esc_attr( $tag ); ?>>
+				<?php endforeach; ?>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
 		<input type="hidden" name="agm_google_maps[custom_icons]" class="custom-icon-list" value="<?php echo esc_attr( $iconlist ); ?>" />
 		<?php
 	}
@@ -108,25 +110,21 @@ class Agm_Icons_AdminPages {
 	 */
 	public function render_settings_box_add() {
 		?>
-		<div>
+		<div class="custom-icon-add-form">
 			<label for="custom-icon"><?php _e( 'Symbol-URL', AGM_LANG ); ?>:</label>
-			<input type="url" class="custom-icon-url" id="custom-icon" value="" style="display:block;width:100%" placeholder="http://..." maxlength="1024" />
-		</div>
-		<div>
-			<span style="float: left"><img src="" class="custom-icon-preview marker-icon-32" /></span>
-			<button type="button" class="add-custom-icon button disabled" disabled="disabled"
-				data-enabled="<?php _e( 'Dieses Symbol hinzufügen', AGM_LANG ); ?>"
-				data-disabled="<?php _e( 'Gib eine gültige Bild-URL ein', AGM_LANG ); ?>"
-				>
-			</button>
-		</div>
-		<br />
-		<div style="clear: both">
+			<input type="url" class="custom-icon-url custom-icon-url-input" id="custom-icon" value="" placeholder="http://..." maxlength="1024" />
+			<div class="custom-icon-preview-row">
+				<span class="custom-icon-preview-wrap"><img src="" class="custom-icon-preview marker-icon-32" /></span>
+				<button type="button" class="add-custom-icon button disabled" disabled="disabled"
+					data-enabled="<?php _e( 'Dieses Symbol hinzufügen', AGM_LANG ); ?>"
+					data-disabled="<?php _e( 'Gib eine gültige Bild-URL ein', AGM_LANG ); ?>"
+					>
+				</button>
+			</div>
 			<button type="button" class="add-media-image button"><?php _e( 'Symbol aus der Mediathek hinzufügen', AGM_LANG ); ?></button>
-		</div>
-		<br />
-		<div>
-			<em><?php _e( 'Hinweis: Alle Symbole werden in voller Größe auf der Karte angezeigt. Im Editor und in dieser Liste wird die Symbolvorschau mit 32 x 32 Pixeln angezeigt.', AGM_LANG ); ?></em>
+			<div class="custom-icon-note">
+				<em><?php _e( 'Hinweis: Die mitgelieferten Standardsymbole bleiben im Karten-Editor verfügbar. Hier verwaltest Du nur zusätzliche Symbole. Im Editor und in dieser Liste wird die Symbolvorschau mit 32 x 32 Pixeln angezeigt.', AGM_LANG ); ?></em>
+			</div>
 		</div>
 		<?php
 	}

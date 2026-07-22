@@ -259,5 +259,98 @@ button .dashicons,
   font-size: 12px;
 }
 
+.settings_page_agm_google_maps .vnav {
+  max-width: 100%;
+}
+
+.settings_page_agm_google_maps .lst-vnav-item > .data {
+  box-sizing: border-box;
+  max-width: calc(100vw - 280px);
+}
+
+.settings_page_agm_google_maps .lst-vnav-item .form-table,
+.settings_page_agm_google_maps .lst-vnav-item .widefat {
+  width: 100%;
+}
+
+.settings_page_agm_google_maps .alt-hint {
+  color: #900;
+  margin: 10px 0;
+}
+
+.settings_page_agm_google_maps .is-hidden {
+  display: none !important;
+}
+
+.settings_page_agm_google_maps .agm-zoom-basic-container,
+.settings_page_agm_google_maps .agm-zoom-advanced-container,
+.settings_page_agm_google_maps .agm-shortcode-switch {
+  max-width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+  .settings_page_agm_google_maps .lst-vnav-item > .data {
+    max-width: calc(100vw - 200px);
+  }
+}
+
+@media screen and (max-width: 782px) {
+  .settings_page_agm_google_maps .vnav {
+    margin-right: 0;
+  }
+
+  .settings_page_agm_google_maps .lst-vnav {
+    margin-bottom: 20px;
+  }
+
+  .settings_page_agm_google_maps .lst-vnav-item > .data {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    max-width: none;
+    margin-top: 0;
+    padding: 12px 10px;
+  }
+
+  .settings_page_agm_google_maps .form-table,
+  .settings_page_agm_google_maps .form-table tbody,
+  .settings_page_agm_google_maps .form-table tr,
+  .settings_page_agm_google_maps .form-table th,
+  .settings_page_agm_google_maps .form-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .settings_page_agm_google_maps .form-table tr {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 12px;
+  }
+
+  .settings_page_agm_google_maps .form-table th {
+    padding: 0 0 6px;
+  }
+
+  .settings_page_agm_google_maps .form-table td {
+    padding: 0;
+  }
+
+  .settings_page_agm_google_maps .form-table input[type="text"],
+  .settings_page_agm_google_maps .form-table input[type="url"],
+  .settings_page_agm_google_maps .form-table select,
+  .settings_page_agm_google_maps .form-table textarea,
+  .settings_page_agm_google_maps .form-table .widefat,
+  .settings_page_agm_google_maps .custom-icon-url-input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .settings_page_agm_google_maps .custom-icons-table {
+    min-width: 520px;
+  }
+}
+
 
 /* 403900-1511247429-ai */
